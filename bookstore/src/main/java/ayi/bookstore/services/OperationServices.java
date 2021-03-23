@@ -67,5 +67,24 @@ public class OperationServices {
             return "Failed";
         }
     }
+
+    /* 
+    Busca el libro segun la id proporcionada, y luego elimina el libro requerido.
+    Si tiene exito devuelve: Sucess.
+    Si no lo tiene: Failed.
+    */
+    public String deleteBook(int id) {
+        try {
+            Optional<Book> searchedBook = bookRepository.findById(id);
+
+            Book book = searchedBook.get();
+
+            bookRepository.delete(book);
+
+            return "Sucess";
+        } catch (Exception e) {
+            return "Failed";
+        }
+    }
     
 }
