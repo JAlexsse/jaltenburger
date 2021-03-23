@@ -20,7 +20,7 @@ public class OperationServices {
     private AuthorRepository authorRepository;
 
     /* 
-    Busca segun el id proporcionado el libro requerido.
+    Busca segun el id proporcionado el libro requerido en la tabla Book.
     Y devuelve el libro.
     */
     public Book getBookData(int id){
@@ -33,7 +33,8 @@ public class OperationServices {
     }
 
     /* 
-    Busca segun el id proporcionado el autor correspondiente y lo devuelve.
+    Busca segun el id proporcionado el autor requerido en la tabla Author.
+    Y devuelve el autor.
     */
     public Author getAuthor(int id){
 
@@ -46,8 +47,10 @@ public class OperationServices {
 
 
     /* 
-    Busca el libro segun la id proporcionada, luego setea el nombre
-    segun el nuevo nombre proporcionado y lo guarda en base de datos.
+    Busca el libro segun la id proporcionada, y luego lo modifica con el
+    nuevo nombre proporcionado y lo guarda en base de datos.
+    Si tiene exito devuelve: Sucess.
+    Si no lo tiene: Failed.
     */
     public String modifyBookName(String name, int id) {
         try {

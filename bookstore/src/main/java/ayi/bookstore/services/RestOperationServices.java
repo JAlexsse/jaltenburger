@@ -24,10 +24,12 @@ public class RestOperationServices {
     @Autowired
     private PublishingRepository publishingRepository;
 
-    /* 
-    Crea una instancia de Book y luego la guarda en la tabla de Book. 
-    Si tiene exito devuelve el String Sucess, de otro modo throws a customized exception.
-
+    /*
+    Recibe un nombre de libro, una id de un autor existente y una id de editorial.
+    Busca las instancias de Author y Publishing correspondientes a las id pasadas como parámetros. 
+    Crea una instancia de Book con el nombre, el autor y la editorial.
+    Luego guarda esta instancia en la tabla de Book. 
+    Si tiene exito devuelve el String Sucess, de otro modo devuelve el String It didn't work.
     */
     public String createBook(String name, int author_id, int publishing_id){
         try {
@@ -49,7 +51,10 @@ public class RestOperationServices {
     }
 
     /* 
-    Crea una instancia de Publishing y luego la guarda en la tabla de Publishing.
+    Crea una instancia de Publishing con el nombre proporcionado como parametro
+    y luego la guarda en la tabla de Publishing.
+    Si tiene éxito devuelve la información guardada: id y nombre.
+    Si no lo tiene devuelve: It didn't work.
     */
     public String createPublishing(String name){
         try {
@@ -64,7 +69,10 @@ public class RestOperationServices {
     }
 
     /* 
-    Crea una instancia de Publishing y luego la guarda en la tabla de Publishing.
+    Crea una instancia de Author con el nombre proporcionado por parametros,
+    y luego la guarda en la tabla de Publishing.
+    Si tiene éxito devuelve la información guardada: id y nombre.
+    Si no lo tiene devuelve: It didn't work.
     */
     public String createAuthor(String name){
         try {
