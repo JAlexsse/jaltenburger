@@ -41,7 +41,6 @@ public class OperationServices {
         Optional<Author> author = authorRepository.findById(id);
         Author searchedAuthor = author.get();
         
-
         return searchedAuthor;   
     }
 
