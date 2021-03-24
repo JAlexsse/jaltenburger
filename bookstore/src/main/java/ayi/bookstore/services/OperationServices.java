@@ -26,7 +26,6 @@ public class OperationServices {
     public Book getBookData(int id){
 
         Optional<Book> searchedBook = bookRepository.findById(id);
-
         Book book = searchedBook.get();
 
         return book;     
@@ -53,12 +52,11 @@ public class OperationServices {
     */
     public String modifyBookName(String name, int id) {
         try {
-            Optional<Book> searchedBook = bookRepository.findById(id);
 
+            Optional<Book> searchedBook = bookRepository.findById(id);
             Book book = searchedBook.get();
 
             book.setBook_name(name);
-
             bookRepository.save(book);
 
             return "Sucess";
@@ -74,8 +72,8 @@ public class OperationServices {
     */
     public String deleteBook(int id) {
         try {
-            Optional<Book> searchedBook = bookRepository.findById(id);
 
+            Optional<Book> searchedBook = bookRepository.findById(id);
             Book book = searchedBook.get();
 
             bookRepository.delete(book);

@@ -58,6 +58,7 @@ public class RestOperationServices {
     */
     public String createPublishing(String name){
         try {
+            
             Publishing newPublishing = new Publishing(name);
             publishingRepository.save(newPublishing);
 
@@ -76,6 +77,7 @@ public class RestOperationServices {
     */
     public String createAuthor(String name){
         try {
+
             Author newAuthor = new Author(name);
             authorRepository.save(newAuthor);
 
