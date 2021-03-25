@@ -29,7 +29,7 @@ public class RestOperationServices {
     Busca las instancias de Author y Publishing correspondientes a las id pasadas como parámetros. 
     Crea una instancia de Book con el nombre, el autor y la editorial.
     Luego guarda esta instancia en la tabla de Book. 
-    Si tiene exito devuelve el String Sucess, de otro modo devuelve el String It didn't work.
+    Si tiene exito devuelve el String Sucess, de otro modo devuelve el String Failed.
     */
     public String createBook(String name, int author_id, int publishing_id){
         try {
@@ -46,7 +46,7 @@ public class RestOperationServices {
             return "Sucess";
             
         } catch (Exception e) {
-            return "It didn't work.";
+            return "Failed.";
         }
     }
 
@@ -57,7 +57,7 @@ public class RestOperationServices {
     Si no las encuentra las crea.
     Crea una instancia de Book con el nombre, el autor y la editorial.
     Luego guarda esta instancia en la tabla de Book. 
-    Si tiene exito devuelve el String Sucess, de otro modo devuelve el String It didn't work.
+    Si tiene exito devuelve el String Sucess, de otro modo devuelve el String Failed.
     */
     public String createBook(String name, String author_name, String publishing_name){
         try { 
@@ -84,7 +84,7 @@ public class RestOperationServices {
             return "Sucess";
             
         } catch (Exception e) {
-            return "It didn't work 2" + e.getMessage();
+            return "Failed.";
         }
     }
 
