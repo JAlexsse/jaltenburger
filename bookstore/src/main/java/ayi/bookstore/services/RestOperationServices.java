@@ -29,7 +29,7 @@ public class RestOperationServices {
     Busca las instancias de Author y Publishing correspondientes a las id pasadas como parámetros. 
     Crea una instancia de Book con el nombre, el autor y la editorial.
     Luego guarda esta instancia en la tabla de Book. 
-    Si tiene exito devuelve el String Sucess, de otro modo devuelve el String It didn't work.
+    Si tiene exito devuelve el String Sucess, de otro modo devuelve el String Failed.
     */
     public String createBook(String name, int author_id, int publishing_id){
         try {
@@ -46,7 +46,45 @@ public class RestOperationServices {
             return "Sucess";
             
         } catch (Exception e) {
-            return "It didn't work.";
+            return "Failed.";
+        }
+    }
+
+    /*
+    SOBRECARGA DE PARAMETROS.
+    Recibe un nombre de libro, tambien un nombre de autor y de una editorial del cual no sabemos si existen.
+    Busca en las instancias de Author y Publishing una instancia de mismo nombre que las pasadas como parámetros. 
+    Si no las encuentra las crea.
+    Crea una instancia de Book con el nombre, el autor y la editorial.
+    Luego guarda esta instancia en la tabla de Book. 
+    Si tiene exito devuelve el String Sucess, de otro modo devuelve el String Failed.
+    */
+    public String createBook(String name, String author_name, String publishing_name){
+        try { 
+            Author author = authorRepository.findByAuthorName(author_name);
+            Publishing publishing = publishingRepository.findByPublishingName(publishing_name);
+
+            if(author != null){
+
+            }else{
+                createAuthor(author_name);
+                author = authorRepository.findByAuthorName(author_name);
+            }
+
+            if(publishing != null){
+
+            }else{
+                createPublishing(publishing_name);
+                publishing = publishingRepository.findByPublishingName(publishing_name);
+            }
+            
+            Book newBook = new Book(name, author, publishing);
+            bookRepository.save(newBook);
+
+            return "Sucess";
+            
+        } catch (Exception e) {
+            return "Failed.";
         }
     }
 
