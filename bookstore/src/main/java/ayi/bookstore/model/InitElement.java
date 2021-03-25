@@ -26,7 +26,11 @@ public class InitElement {
     @JsonProperty("publishing")
     private int publishing_id;
 
+    @JsonProperty("authorname")
+    private String author_name;
 
+    @JsonProperty("publishingname")
+    private String publishing_name;
 
     
 }
