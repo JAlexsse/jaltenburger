@@ -19,12 +19,6 @@ public class RestCreateController {
     Llama al servicio para crear un nuevo libro, para lo cual se proporciona:
     nombre del libro, el autor y su editorial.
 
-    POSTMAN body:
-        {
-        "name": "nombre del libro",
-        "author": "id del autor",
-        "publishing": "id de la editorial"
-        }
     */
     @PostMapping("/createbook")
     public String createBook(@RequestBody InitElement initElement) {
@@ -47,10 +41,6 @@ public class RestCreateController {
     Llama al servicio para crear una nueva editorial, para lo cual se proporciona:
     nombre de la editorial.
 
-        POSTMAN body:
-        {
-        "name":"nombre de la editorial"
-        }
     */
     @PostMapping("/createpublishing")
     public String createPublihsing(@RequestBody InitElement initElement) {
@@ -64,10 +54,6 @@ public class RestCreateController {
     Llama al servicio para crear un nuevo Author, para lo cual se proporciona:
     nombre del autor.
 
-        POSTMAN body:
-        {
-        "name":"nombre del autor"
-        }
     */
     @PostMapping("/createauthor")
     public String createAuthor(@RequestBody InitElement initElement) {
