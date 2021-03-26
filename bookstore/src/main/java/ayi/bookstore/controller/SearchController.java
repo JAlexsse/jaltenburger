@@ -21,7 +21,7 @@ public class SearchController {
     /* 
     Llama al servicio para buscar un libro atraves de la id proporcionada.
     */
-    @GetMapping("/searchbook")
+    @GetMapping("/user/searchbook")
     public String returnBook(@RequestParam(name = "id") int id, Model model) {
         try {
             Book book = operationServices.getBookData(id);
@@ -41,7 +41,7 @@ public class SearchController {
     /* 
     Llama al servicio para cambiar el nombre del libro del cual se proporciona la id.
     */
-    @GetMapping("/modifybook")
+    @GetMapping("/admin/modifybook")
     public String modifyBookName(@RequestParam(name = "id") int id,
                                 @RequestParam(name = "name") String name, 
                                 Model model) {
@@ -61,7 +61,7 @@ public class SearchController {
     /* 
     Llama al servicio para cambiar el nombre del libro del cual se proporciona la id.
     */
-    @GetMapping("/authorbooks")
+    @GetMapping("/user/authorbooks")
     public String authorBooks(@RequestParam(name = "id") int id, Model model) {
         try {
 
@@ -84,7 +84,7 @@ public class SearchController {
     /* 
     Llama al servicio para cambiar el nombre del libro del cual se proporciona la id.
     */
-    @GetMapping("/deletebook")
+    @GetMapping("/admin/deletebook")
     public String deleteBook(@RequestParam(name = "id") int id, Model model) {
         try {
             model.addAttribute("message", operationServices.deleteBook(id));
