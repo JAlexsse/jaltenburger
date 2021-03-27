@@ -6,42 +6,40 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 
 @Configuration
 public class BookStoreSecurityConfiguration extends WebSecurityConfigurerAdapter{
 
-    
-    @Autowired
-    private AccessDeniedHandler accessDeniedHandler;
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
-        http.csrf().disable()
-                .authorizeRequests()
+       
+        http
+            .authorizeRequests()
                 .antMatchers("/", "/home", "/about").permitAll()
-                .antMatchers("/admin/**").hasAnyRole("USER", "ADMIN")
-                .antMatchers("/user/**").hasAnyRole("USER")
-                .anyRequest().authenticated()
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/user/**").hasRole("USER")
                 .and()
-                .formLogin()
+            .formLogin()
                 .loginPage("/login")
                 .permitAll()
                 .and()
-                .logout()
-                .permitAll()
-                .and()
-                .exceptionHandling().accessDeniedHandler(accessDeniedHandler);
+            .exceptionHandling()
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    AccessDeniedHandler defaultAccessDeniedHandler = new AccessDeniedHandlerImpl();
+                    defaultAccessDeniedHandler.handle(request, response, accessDeniedException);
+                });
     }
 
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-
-        auth.inMemoryAuthentication()
-                .withUser("user").password("password").roles("USER")
+        
+        auth
+            .inMemoryAuthentication()
+                .withUser.("user").password("123").roles("USER")
                 .and()
-                .withUser("admin").password("password").roles("ADMIN");
+                .withUser("admin").password("123").roles("ADMIN");
     }
 
 }
