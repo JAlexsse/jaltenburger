@@ -23,6 +23,10 @@ public enum BookstoreUserRoll {
         return permissions;
     }
 
+    /*
+    Con el objetivo de asignar los distintos permisos que tiene cada rol, 
+    para ser utilizados por la annotation @PreAuthorize.
+    */
     public Set<SimpleGrantedAuthority> getGrantedAuthorities(){
         Set<SimpleGrantedAuthority> permissions = getPermissions().stream()
             .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
