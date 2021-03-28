@@ -4,6 +4,7 @@ import ayi.bookstore.model.InitElement;
 import ayi.bookstore.services.RestOperationServices;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,7 @@ public class RestCreateController {
 
     */
     @PostMapping("/createbook")
+    @PreAuthorize("hasAuthority('book:write')")
     public String createBook(@RequestBody InitElement initElement) {
         
         String result;
@@ -43,6 +45,7 @@ public class RestCreateController {
 
     */
     @PostMapping("/createpublishing")
+    @PreAuthorize("hasAuthority('publishing:write')")
     public String createPublihsing(@RequestBody InitElement initElement) {
         
         String returnedData = restOperationServices.createPublishing(initElement.getName()); 
@@ -56,6 +59,7 @@ public class RestCreateController {
 
     */
     @PostMapping("/createauthor")
+    @PreAuthorize("hasAuthority('author:write')")
     public String createAuthor(@RequestBody InitElement initElement) {
         
         String returnedData = restOperationServices.createAuthor(initElement.getName()); 

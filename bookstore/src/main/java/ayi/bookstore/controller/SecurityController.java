@@ -26,11 +26,6 @@ public class SecurityController {
         return "login";
     }
 
-    @GetMapping("/logout")
-    public String logout() {
-        return "login";
-    }
-
     @GetMapping("/about")
     public String about() {
         return "about";

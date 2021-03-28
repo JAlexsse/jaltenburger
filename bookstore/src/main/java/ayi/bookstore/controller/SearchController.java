@@ -6,6 +6,7 @@ import ayi.bookstore.services.OperationServices;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ public class SearchController {
     Llama al servicio para buscar un libro atraves de la id proporcionada.
     */
     @GetMapping("/user/searchbook")
+    @PreAuthorize("hasAuthority('book:read')")
     public String returnBook(@RequestParam(name = "id") int id, Model model) {
         try {
             Book book = operationServices.getBookData(id);
@@ -42,6 +44,7 @@ public class SearchController {
     Llama al servicio para cambiar el nombre del libro del cual se proporciona la id.
     */
     @GetMapping("/admin/modifybook")
+    @PreAuthorize("hasAuthority('book:write')")
     public String modifyBookName(@RequestParam(name = "id") int id,
                                 @RequestParam(name = "name") String name, 
                                 Model model) {
@@ -62,6 +65,7 @@ public class SearchController {
     Llama al servicio para cambiar el nombre del libro del cual se proporciona la id.
     */
     @GetMapping("/user/authorbooks")
+    @PreAuthorize("hasAuthority('author:read')")
     public String authorBooks(@RequestParam(name = "id") int id, Model model) {
         try {
 
@@ -85,6 +89,7 @@ public class SearchController {
     Llama al servicio para cambiar el nombre del libro del cual se proporciona la id.
     */
     @GetMapping("/admin/deletebook")
+    @PreAuthorize("hasAuthority('book:write')")
     public String deleteBook(@RequestParam(name = "id") int id, Model model) {
         try {
             model.addAttribute("message", operationServices.deleteBook(id));
