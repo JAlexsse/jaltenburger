@@ -89,13 +89,13 @@ public class BookStoreSecurityConfiguration extends WebSecurityConfigurerAdapter
         UserDetails admin = User.builder()
             .username("admin")
             .password(encoder.encode("password"))
-            .authorities(BookstoreUserRoll.ADMIN.getGrantedAuthorities())
+            .authorities(BookstoreUserRole.ADMIN.getGrantedAuthorities())
             .build();
 
         UserDetails user = User.builder()
             .username("user")
             .password(encoder.encode("password"))
-            .authorities(BookstoreUserRoll.USER.getGrantedAuthorities())
+            .authorities(BookstoreUserRole.USER.getGrantedAuthorities())
             .build();
 
         return new InMemoryUserDetailsManager(admin, user);

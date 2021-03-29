@@ -7,7 +7,7 @@ import com.google.common.collect.Sets;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-public enum BookstoreUserRoll {
+public enum BookstoreUserRole {
     USER(Sets.newHashSet(BookstoreUserPermission.AUTHOR_READ, BookstoreUserPermission.PUBLISHING_READ, BookstoreUserPermission.BOOK_READ)),
     ADMIN(Sets.newHashSet(BookstoreUserPermission.AUTHOR_READ, BookstoreUserPermission.PUBLISHING_READ, BookstoreUserPermission.BOOK_READ,
                         BookstoreUserPermission.AUTHOR_WRITE, BookstoreUserPermission.PUBLISHING_WRITE, BookstoreUserPermission.BOOK_WRITE));
@@ -15,7 +15,7 @@ public enum BookstoreUserRoll {
 
     private final Set<BookstoreUserPermission> permissions;
 
-    BookstoreUserRoll(Set<BookstoreUserPermission> permissions){
+    BookstoreUserRole(Set<BookstoreUserPermission> permissions){
         this.permissions = permissions;
     }
 
