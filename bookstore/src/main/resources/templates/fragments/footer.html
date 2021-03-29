@@ -8,12 +8,9 @@
     <div class="row center footer-dark">
 
         <footer>
-            <span sec:authorize="isAuthenticated()">
+            <span class="btn btn-lg btn-warning btn-block" sec:authorize="isAuthenticated()">
                 <a href="/logout">Sign Out</a>
             </span>
-
-            <script type="text/javascript"
-                src="webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
         </footer>
     </div>

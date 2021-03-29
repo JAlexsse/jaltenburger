@@ -28,9 +28,18 @@ public class RestCreateController {
         String result;
 
         if(initElement.getAuthor_id() > 0 && initElement.getPublishing_id() > 0){
-            result = restOperationServices.createBook(initElement.getName(), initElement.getAuthor_id(), initElement.getPublishing_id());
+            result = restOperationServices.createBook(
+                initElement.getName(), 
+                initElement.getAuthor_id(), 
+                initElement.getPrice(),
+                initElement.getPublishing_id()
+                );
         } else if (initElement.getAuthor_name() != "" && initElement.getPublishing_name() != ""){
-            result = restOperationServices.createBook(initElement.getName(), initElement.getAuthor_name(), initElement.getPublishing_name());
+            result = restOperationServices.createBook(
+                initElement.getName(), 
+                initElement.getAuthor_name(),
+                initElement.getPrice(), 
+                initElement.getPublishing_name());
         } else {
             result = "Failed.";
         }

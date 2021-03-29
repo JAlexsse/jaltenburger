@@ -7,7 +7,7 @@
     <title>Spring Boot Thymeleaf + Security</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">    <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <link rel="stylesheet" href="/css/main.css"/>
 
 </head>
 
@@ -31,12 +31,14 @@
                 <tr>
                     <th>Name</th>
                     <th>Publishing</th>
+                    <th>Price</th>
                 </tr>
             </thead>
             <tbody>
                 <tr th:each="book: ${books}">
                     <td th:text="${book.book_name}"></td>
                     <td th:text="${book.publishing.publishing_name}"></td>
+                    <td th:text="${book.price}"></td>
                 </tr>
             </tbody>
         </table>

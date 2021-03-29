@@ -23,6 +23,9 @@ public class InitElement {
     @JsonProperty("author")
     private int author_id;
 
+    @JsonProperty("price")
+    private double price;
+
     @JsonProperty("publishing")
     private int publishing_id;
 

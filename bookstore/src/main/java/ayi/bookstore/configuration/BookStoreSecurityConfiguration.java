@@ -1,5 +1,7 @@
 package ayi.bookstore.configuration;
 
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -14,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import ayi.bookstore.security.*;
 
@@ -25,29 +28,56 @@ public class BookStoreSecurityConfiguration extends WebSecurityConfigurerAdapter
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        
+        /*
+            .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) 
+            Es recomendable utilizar csrf cuando usuarios van a poder procesar por browser informacion.
+            En estos casos el withHttpOnlyFalse no permite 
+            que la cookie se accesible para el cliente, pero hay
+            que implementar logica para pasar el token por cada request.
+        */
 
-        http.csrf().disable()
+        http
+                .csrf().disable()
                 .authorizeRequests()
                     .antMatchers("/", "/home", "/about").permitAll()
+                    .antMatchers("/h2-console/**").hasRole("ADMIN")
                     //.antMatchers("/admin/**").hasAnyRole(BookstoreUserRoll.ADMIN.name())
                     //.antMatchers("/user/**").hasAnyRole(BookstoreUserRoll.USER.name())
                 .anyRequest().authenticated()
                 .and()
-                .httpBasic()
-                .and()
                 .formLogin()
                     .loginPage("/login")
-                    .defaultSuccessUrl("/home")
+                    .defaultSuccessUrl("/home", true)
                     .permitAll()
                 .and()
-                    .logout()
+                .rememberMe()
+                    .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(3))
+                .and()
+                .logout()
+                    .logoutUrl("/logout")
+                    /*
+                    Es best practice siempre utilizar el logout como POST si se esta usando csrf.
+                    Como en este caso esta disabled utilizamos get.
+                    https://docs.spring.io/spring-security/site/docs/4.2.12.RELEASE/apidocs/org/springframework/security/config/annotation/web/configurers/LogoutConfigurer.html
+                    */
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
+                    .clearAuthentication(true)
+                    .invalidateHttpSession(true)
+                    .deleteCookies("JSESSIONID", "remember-me")
+                    .logoutSuccessUrl("/login")
                     .permitAll()
                 .and()
                 .exceptionHandling()
                     .accessDeniedHandler((request, response, accessDeniedException) -> {
                         AccessDeniedHandler accessDeniedHandler = new AccessDeniedHandlerImpl();
                         accessDeniedHandler.handle(request, response, accessDeniedException);
-                    });
+                    })
+                
+                //para habilitar la consola de h2
+                .and().csrf().ignoringAntMatchers("/h2-console/**")
+                .and().headers().frameOptions().sameOrigin();    
+
     }
 
     @Override

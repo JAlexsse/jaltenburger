@@ -21,24 +21,22 @@
 
     <div class="starter-template">
         <h1>Spring Boot Web Thymeleaf + Security</h1>
-        <h2>Book Data</h2>        
+        <h2>Book Prices</h2>        
     </div>
     <div class="center">
         <table>
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Author</th>
-                    <th>Publishing</th>
                     <th>Price</th>
+                    <th>Price with Taxes</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td th:text="${book.book_name}"></td>
-                    <td th:text="${book.author.author_name}"></td>
-                    <td th:text="${book.publishing.publishing_name}"></td>
                     <td th:text="${book.price}"></td>
+                    <td th:text="${priceTaxed}"></td>
                 </tr>
             </tbody>
         </table>

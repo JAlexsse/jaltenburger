@@ -17,6 +17,13 @@
 		<java.version>1.8</java.version>
 	</properties>
 	<dependencies>
+    
+        <!--MATH COMMON OPERATIONS-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>3.6.1</version>
+        </dependency>
 
         <!--JPA-->
         <dependency>
@@ -82,7 +89,8 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>28.1-jre</version>
-        </dependency>		
+        </dependency>
+	
     </dependencies>
 
 	<build>

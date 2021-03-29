@@ -11,10 +11,10 @@ INSERT INTO Publishing (publishing_id, publishing_name) VALUES
     (2, 'BLUE HOLE INC.'),
     (3, 'TEYVAT');
 
-INSERT INTO Book (id, book_name, author_id, publishing_id) VALUES
-    (1, 'Wish Upon a Lantern', 3, 2),
-    (2, 'Today, after the night falls', 3, 3),
-    (3, 'One Upon a Time', 5, 1);
+INSERT INTO Book (id, book_name, price, author_id, publishing_id) VALUES
+    (1, 'Wish Upon a Lantern', 134.56, 3, 2),
+    (2, 'Today, after the night falls', 544.21, 3, 3),
+    (3, 'One Upon a Time', 400.32, 5, 1);
 
     
 

@@ -31,7 +31,7 @@ public class RestOperationServices {
     Luego guarda esta instancia en la tabla de Book. 
     Si tiene exito devuelve el String Sucess, de otro modo devuelve el String Failed.
     */
-    public String createBook(String name, int author_id, int publishing_id){
+    public String createBook(String name, int author_id, double price, int publishing_id){
         try {
 
             Optional<Author> authorSearched = authorRepository.findById(author_id);
@@ -40,7 +40,7 @@ public class RestOperationServices {
             Optional<Publishing> publishingSearched = publishingRepository.findById(publishing_id);
             Publishing publishing = publishingSearched.get();
 
-            Book newBook = new Book(name, author, publishing);
+            Book newBook = new Book(name, author, price, publishing);
             bookRepository.save(newBook);
 
             return "Sucess";
@@ -59,7 +59,7 @@ public class RestOperationServices {
     Luego guarda esta instancia en la tabla de Book. 
     Si tiene exito devuelve el String Sucess, de otro modo devuelve el String Failed.
     */
-    public String createBook(String name, String author_name, String publishing_name){
+    public String createBook(String name, String author_name, double price, String publishing_name){
         try { 
             Author author = authorRepository.findByAuthorName(author_name);
             Publishing publishing = publishingRepository.findByPublishingName(publishing_name);
@@ -78,7 +78,7 @@ public class RestOperationServices {
                 publishing = publishingRepository.findByPublishingName(publishing_name);
             }
             
-            Book newBook = new Book(name, author, publishing);
+            Book newBook = new Book(name, author, price, publishing);
             bookRepository.save(newBook);
 
             return "Sucess";

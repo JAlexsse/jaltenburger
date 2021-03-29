@@ -51,7 +51,7 @@ public class SearchController {
         try {
             model.addAttribute("message", operationServices.modifyBookName(name, id));
             model.addAttribute("bookafter", operationServices.getBookData(id));
-            return "modifybook";
+            return "modifyBook";
             
         } catch (Exception e) {
             String error = e.getMessage();
@@ -102,5 +102,29 @@ public class SearchController {
             return "error";
         }       
     }
+
+    /* 
+    Llama al servicio para buscar un libro atraves de la id proporcionada
+    y devuelve: el libro y su precio calculado con impuestos.
+    */
+    @GetMapping("/admin/bookprices")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public String bookPrices(@RequestParam(name = "id") int id, Model model) {
+        try {
+            Book book = operationServices.getBookData(id);
+
+            model.addAttribute("book", book);
+            model.addAttribute("priceTaxed", book.calculatePrice());
+
+            return "bookPrices";
+            
+        } catch (Exception e) {
+            String error = e.getMessage();
+
+            model.addAttribute("message", error);
+            return "error";
+        }
+    }
+
     
 }
