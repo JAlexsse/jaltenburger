@@ -33,7 +33,7 @@ public class BookStoreSecurityConfiguration extends WebSecurityConfigurerAdapter
             .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) 
             Es recomendable utilizar csrf cuando usuarios van a poder procesar por browser informacion.
             En estos casos el withHttpOnlyFalse no permite 
-            que la cookie se accesible para el cliente, pero hay
+            que la cookie sea accesible para el cliente, pero hay
             que implementar logica para pasar el token por cada request.
         */
 
@@ -75,7 +75,6 @@ public class BookStoreSecurityConfiguration extends WebSecurityConfigurerAdapter
                     })
                 
                 //para habilitar la consola de h2
-                .and().csrf().ignoringAntMatchers("/h2-console/**")
                 .and().headers().frameOptions().sameOrigin();    
 
     }
