@@ -72,10 +72,7 @@ public class BookStoreSecurityConfiguration extends WebSecurityConfigurerAdapter
                     .accessDeniedHandler((request, response, accessDeniedException) -> {
                         AccessDeniedHandler accessDeniedHandler = new AccessDeniedHandlerImpl();
                         accessDeniedHandler.handle(request, response, accessDeniedException);
-                    })
-                
-                //para habilitar la consola de h2
-                .and().headers().frameOptions().sameOrigin();    
+                    });    
 
     }
 
