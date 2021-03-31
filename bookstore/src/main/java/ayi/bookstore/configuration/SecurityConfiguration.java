@@ -47,8 +47,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
                     //.antMatchers("/user/**").hasAnyRole(BookstoreUserRoll.USER.name())
                 .anyRequest().authenticated()
                 .and()
-                .httpBasic()
-                .and()
                 .formLogin()
                     .loginPage("/login")
                     .defaultSuccessUrl("/home", true)

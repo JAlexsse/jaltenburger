@@ -11,8 +11,8 @@ import ayi.bookstore.model.Adress;
 public class AdressBeanConfiguration {
 
     @Bean
-    public Adress publishingAdress(String street, int number, int zipCode) {
-        return new Adress(street, number, zipCode);        
+    public Adress publishingAdress() {
+        return new Adress();        
     }
 
 
