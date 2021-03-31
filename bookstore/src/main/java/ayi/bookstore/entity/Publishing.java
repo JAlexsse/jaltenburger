@@ -30,9 +30,9 @@ public class Publishing {
 
     @Embedded
     @AttributeOverrides({
-        @AttributeOverride( name = "street", column = @Column(name = "adressStreet")),
-        @AttributeOverride( name = "number", column = @Column(name = "adressNumber")),
-        @AttributeOverride( name = "zipCode", column = @Column(name = "adressZipCode"))
+        @AttributeOverride( name = "street", column = @Column(name = "adress_street")),
+        @AttributeOverride( name = "number", column = @Column(name = "adress_number")),
+        @AttributeOverride( name = "zipCode", column = @Column(name = "adress_zipcode"))
     })
     private Adress adress;
 
