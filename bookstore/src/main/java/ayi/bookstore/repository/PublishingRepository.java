@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import ayi.bookstore.model.Publishing;
+import ayi.bookstore.entity.Publishing;
 
 @Repository
 public interface PublishingRepository extends JpaRepository<Publishing, Integer>{

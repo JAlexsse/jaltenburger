@@ -1,7 +1,8 @@
 package ayi.bookstore.controller;
 
+import ayi.bookstore.exceptions.InformationNotCorrectException;
 import ayi.bookstore.model.InitElement;
-import ayi.bookstore.services.RestOperationServices;
+import ayi.bookstore.services.CreateServices;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,10 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-public class RestCreateController {
+public class CreateController {
 
     @Autowired
-    private RestOperationServices restOperationServices;
+    private CreateServices createServices;
 
     /* 
     Llama al servicio para crear un nuevo libro, para lo cual se proporciona:
@@ -28,20 +29,20 @@ public class RestCreateController {
         String result;
 
         if(initElement.getAuthor_id() > 0 && initElement.getPublishing_id() > 0){
-            result = restOperationServices.createBook(
+            result = createServices.createBook(
                 initElement.getName(), 
                 initElement.getAuthor_id(), 
                 initElement.getPrice(),
                 initElement.getPublishing_id()
                 );
         } else if (initElement.getAuthor_name() != "" && initElement.getPublishing_name() != ""){
-            result = restOperationServices.createBook(
+            result = createServices.createBook(
                 initElement.getName(), 
                 initElement.getAuthor_name(),
                 initElement.getPrice(), 
                 initElement.getPublishing_name());
         } else {
-            result = "Failed.";
+            throw new InformationNotCorrectException("The information provided is not correct.");
         }
          
 
@@ -50,16 +51,19 @@ public class RestCreateController {
 
     /* 
     Llama al servicio para crear una nueva editorial, para lo cual se proporciona:
-    nombre de la editorial.
+    nombre de la editorial, y datos de la direccion: numero, calle y codigo postal.
 
     */
     @PostMapping("/createpublishing")
     @PreAuthorize("hasAuthority('publishing:write')")
-    public String createPublihsing(@RequestBody InitElement initElement) {
-        
-        String returnedData = restOperationServices.createPublishing(initElement.getName()); 
+    public boolean createPublihsing(@RequestBody InitElement initElement) {
 
-        return returnedData;
+        return createServices.createPublishing(
+            initElement.getName(), 
+            initElement.getNumber(), 
+            initElement.getStreet(), 
+            initElement.getZipCode()
+        ); 
     }
 
     /* 
@@ -71,7 +75,7 @@ public class RestCreateController {
     @PreAuthorize("hasAuthority('author:write')")
     public String createAuthor(@RequestBody InitElement initElement) {
         
-        String returnedData = restOperationServices.createAuthor(initElement.getName()); 
+        String returnedData = createServices.createAuthor(initElement.getName()); 
 
         return returnedData;
     }

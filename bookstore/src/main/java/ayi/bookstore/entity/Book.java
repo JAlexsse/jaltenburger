@@ -1,5 +1,6 @@
-package ayi.bookstore.model;
+package ayi.bookstore.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -27,7 +28,10 @@ public class Book implements Calculable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column
     private String book_name;
+
+    @Column
     private double price;
 
     @ManyToOne(targetEntity = Author.class, fetch = FetchType.EAGER)

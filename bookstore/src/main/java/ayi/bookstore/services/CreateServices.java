@@ -1,19 +1,22 @@
 package ayi.bookstore.services;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
 
-import ayi.bookstore.model.Author;
-import ayi.bookstore.model.Book;
-import ayi.bookstore.model.Publishing;
+import ayi.bookstore.entity.Author;
+import ayi.bookstore.entity.Book;
+import ayi.bookstore.entity.Publishing;
+import ayi.bookstore.exceptions.EntityNotFoundException;
+import ayi.bookstore.exceptions.InformationNotCorrectException;
+import ayi.bookstore.model.Adress;
 import ayi.bookstore.repository.AuthorRepository;
 import ayi.bookstore.repository.BookRepository;
 import ayi.bookstore.repository.PublishingRepository;
 
 @Service
-public class RestOperationServices {
+public class CreateServices {
     
     @Autowired
     private BookRepository bookRepository;
@@ -34,19 +37,19 @@ public class RestOperationServices {
     public String createBook(String name, int author_id, double price, int publishing_id){
         try {
 
-            Optional<Author> authorSearched = authorRepository.findById(author_id);
-            Author author = authorSearched.get();
+            Author author = authorRepository.findById(author_id)
+            .orElseThrow(() -> new EntityNotFoundException("The id does not match with any author on data base"));
 
-            Optional<Publishing> publishingSearched = publishingRepository.findById(publishing_id);
-            Publishing publishing = publishingSearched.get();
-
+            Publishing publishing = publishingRepository.findById(publishing_id)
+            .orElseThrow(() -> new EntityNotFoundException("The id does not match with any author on data base"));
+            
             Book newBook = new Book(name, author, price, publishing);
             bookRepository.save(newBook);
 
             return "Sucess";
             
         } catch (Exception e) {
-            return "Failed.";
+            return e.getMessage();
         }
     }
 
@@ -74,8 +77,7 @@ public class RestOperationServices {
             if(publishing != null){
 
             }else{
-                createPublishing(publishing_name);
-                publishing = publishingRepository.findByPublishingName(publishing_name);
+                throw new InformationNotCorrectException("The publishing has to be registered before.");
             }
             
             Book newBook = new Book(name, author, price, publishing);
@@ -94,17 +96,27 @@ public class RestOperationServices {
     Si tiene éxito devuelve la información guardada: id y nombre.
     Si no lo tiene devuelve: It didn't work.
     */
-    public String createPublishing(String name){
+    public boolean createPublishing(String name, int number, String street, int zipCode){
+        
+        ApplicationContext context = new AnnotationConfigApplicationContext(Adress.class);
+
         try {
+            Adress adress = context.getBean(Adress.class);
+
+            adress.setNumber(number);
+            adress.setStreet(street);
+            adress.setZipCode(zipCode);
             
-            Publishing newPublishing = new Publishing(name);
+            Publishing newPublishing = new Publishing(name, adress);
             publishingRepository.save(newPublishing);
 
-            return "Sucess: id: " + newPublishing.getPublishing_id() + " name: " + newPublishing.getPublishing_name();
+            return true;
             
         } catch (Exception e) {
-            return "It didn't work.";
-        }     
+            throw new InformationNotCorrectException("The information provided is not correct.");
+        }   finally {
+            ((AnnotationConfigApplicationContext)context).close();
+        }  
     }
 
     /* 

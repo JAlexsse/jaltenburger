@@ -2,6 +2,8 @@ package ayi.bookstore.configuration;
 
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -11,7 +13,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -23,7 +24,7 @@ import ayi.bookstore.security.*;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class BookStoreSecurityConfiguration extends WebSecurityConfigurerAdapter{
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 
 
     @Override
@@ -45,6 +46,8 @@ public class BookStoreSecurityConfiguration extends WebSecurityConfigurerAdapter
                     //.antMatchers("/admin/**").hasAnyRole(BookstoreUserRoll.ADMIN.name())
                     //.antMatchers("/user/**").hasAnyRole(BookstoreUserRoll.USER.name())
                 .anyRequest().authenticated()
+                .and()
+                .httpBasic()
                 .and()
                 .formLogin()
                     .loginPage("/login")
@@ -72,7 +75,9 @@ public class BookStoreSecurityConfiguration extends WebSecurityConfigurerAdapter
                     .accessDeniedHandler((request, response, accessDeniedException) -> {
                         AccessDeniedHandler accessDeniedHandler = new AccessDeniedHandlerImpl();
                         accessDeniedHandler.handle(request, response, accessDeniedException);
-                    });    
+                    })
+                .and()
+                .headers().frameOptions().disable();    
 
     }
 
@@ -80,7 +85,8 @@ public class BookStoreSecurityConfiguration extends WebSecurityConfigurerAdapter
     @Bean
     protected UserDetailsService userDetailsService(){
 
-        PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();        
+        ApplicationContext context = new AnnotationConfigApplicationContext(EncoderBeanConfiguration.class);
+        PasswordEncoder encoder = context.getBean(PasswordEncoder.class);    
 
         UserDetails admin = User.builder()
             .username("admin")
@@ -93,6 +99,8 @@ public class BookStoreSecurityConfiguration extends WebSecurityConfigurerAdapter
             .password(encoder.encode("password"))
             .authorities(BookstoreUserRole.USER.getGrantedAuthorities())
             .build();
+        
+        ((AnnotationConfigApplicationContext)context).close();
 
         return new InMemoryUserDetailsManager(admin, user);
     }
