@@ -120,6 +120,20 @@ public class BookRepositoryTest {
         
     }
 
+    @Test
+    public void getBooksByPublishing_WithInvalidId_ShouldHaveNoResults() {
+
+        booksTest = bookRepository.findAll(
+            Specification.where(
+                bookSpecification
+                    .getUserSpecificationByAuthorOrPublishing("publishing", 5) //id no existe
+            )
+        );
+        
+        assertEquals(0, booksTest.size());
+        
+    }
+
     
     
 }
