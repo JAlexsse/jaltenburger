@@ -1,6 +1,7 @@
 package ayi.bookstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import ayi.bookstore.entity.Author;
@@ -8,6 +9,10 @@ import ayi.bookstore.entity.Book;
 import ayi.bookstore.exceptions.EntityNotFoundException;
 import ayi.bookstore.repository.AuthorRepository;
 import ayi.bookstore.repository.BookRepository;
+
+/*
+Best Practice: asegurar en la capa de servicios.
+*/
 
 @Service
 public class SearchServices {
@@ -23,6 +28,7 @@ public class SearchServices {
     Y devuelve el libro.
     De otro modo devuelve una excepcion customizada.
     */
+    @PreAuthorize("hasAuthority('book:read')")
     public Book getBookData(int id){
 
         return bookRepository.findById(id).orElseThrow(
@@ -35,6 +41,7 @@ public class SearchServices {
     Y devuelve el autor.
     De otro modo tira una excepcion customizada.
     */
+    @PreAuthorize("hasAuthority('author:read')")
     public Author getAuthor(int id){
 
         return authorRepository.findById(id).orElseThrow(
@@ -47,6 +54,7 @@ public class SearchServices {
     Y devuelve el autor.
     De otro modo tira una excepcion customizada.
     */
+    @PreAuthorize("hasAuthority('publishing:read')")
     public Author getPublishing(int id){
         
         return authorRepository.findById(id).orElseThrow(

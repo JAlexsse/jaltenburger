@@ -5,7 +5,6 @@ import ayi.bookstore.model.InitElement;
 import ayi.bookstore.services.CreateServices;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,16 +13,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class CreateController {
 
-    @Autowired
+    
     private CreateServices createServices;
+
+    @Autowired
+    public CreateController(CreateServices createServices) {
+        this.createServices = createServices;
+    }
 
     /* 
     Llama al servicio para crear un nuevo libro, para lo cual se proporciona:
     nombre del libro, el autor y su editorial.
 
     */
-    @PostMapping("/createbook")
-    @PreAuthorize("hasAuthority('book:write')")
+    @PostMapping("/admin/createbook")
     public String createBook(@RequestBody InitElement initElement) {
         
         String result;
@@ -54,12 +57,11 @@ public class CreateController {
     nombre de la editorial, y datos de la direccion: numero, calle y codigo postal.
 
     */
-    @PostMapping("/createpublishing")
-    @PreAuthorize("hasAuthority('publishing:write')")
+    @PostMapping("/admin/createpublishing")
     public boolean createPublihsing(@RequestBody InitElement initElement) {
 
         return createServices.createPublishing(
-            initElement.getName(), 
+            initElement.getPublishing_name(), 
             initElement.getNumber(), 
             initElement.getStreet(), 
             initElement.getZipCode()
@@ -71,13 +73,12 @@ public class CreateController {
     nombre del autor.
 
     */
-    @PostMapping("/createauthor")
-    @PreAuthorize("hasAuthority('author:write')")
+    @PostMapping("/admin/createauthor")
     public String createAuthor(@RequestBody InitElement initElement) {
         
-        String returnedData = createServices.createAuthor(initElement.getName()); 
+        String response = createServices.createAuthor(initElement.getAuthor_name()); 
 
-        return returnedData;
+        return response;
     }
 
 }

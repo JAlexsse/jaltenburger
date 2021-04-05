@@ -3,6 +3,7 @@ package ayi.bookstore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import ayi.bookstore.entity.Author;
@@ -14,6 +15,10 @@ import ayi.bookstore.model.Adress;
 import ayi.bookstore.repository.AuthorRepository;
 import ayi.bookstore.repository.BookRepository;
 import ayi.bookstore.repository.PublishingRepository;
+
+/*
+Best Practice: asegurar en la capa de servicios.
+*/
 
 @Service
 public class CreateServices {
@@ -34,6 +39,7 @@ public class CreateServices {
     Luego guarda esta instancia en la tabla de Book. 
     Si tiene exito devuelve el String Sucess, de otro modo devuelve el String Failed.
     */
+    @PreAuthorize("hasAuthority('book:write')")
     public String createBook(String name, int author_id, double price, int publishing_id){
         try {
 
@@ -62,6 +68,7 @@ public class CreateServices {
     Luego guarda esta instancia en la tabla de Book. 
     Si tiene exito devuelve el String Sucess, de otro modo devuelve el String Failed.
     */
+    @PreAuthorize("hasAuthority('book:write')")
     public String createBook(String name, String author_name, double price, String publishing_name){
         try { 
             Author author = authorRepository.findByAuthorName(author_name);
@@ -86,7 +93,7 @@ public class CreateServices {
             return "Sucess";
             
         } catch (Exception e) {
-            return "Failed.";
+            return e.getMessage();
         }
     }
 
@@ -96,6 +103,7 @@ public class CreateServices {
     Si tiene éxito devuelve la información guardada: id y nombre.
     Si no lo tiene devuelve: It didn't work.
     */
+    @PreAuthorize("hasAuthority('publishing:write')")
     public boolean createPublishing(String name, int number, String street, int zipCode){
         
         ApplicationContext context = new AnnotationConfigApplicationContext(Adress.class);
@@ -125,13 +133,14 @@ public class CreateServices {
     Si tiene éxito devuelve la información guardada: id y nombre.
     Si no lo tiene devuelve: It didn't work.
     */
+    @PreAuthorize("hasAuthority('author:write')")
     public String createAuthor(String name){
         try {
 
             Author newAuthor = new Author(name);
             authorRepository.save(newAuthor);
 
-            return "Sucess: id: " + newAuthor.getAuthor_id() + " name: " + newAuthor.getAuthor_name();
+            return "Sucess";
             
         } catch (Exception e) {
             return "It didn't work.";

@@ -3,6 +3,7 @@ package ayi.bookstore.model;
 import java.time.ZonedDateTime;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Component
 public class BookStoreException {
 
     private String message;

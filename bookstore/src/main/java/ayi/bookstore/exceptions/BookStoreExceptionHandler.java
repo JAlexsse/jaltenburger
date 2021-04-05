@@ -23,20 +23,27 @@ public class BookStoreExceptionHandler extends ResponseEntityExceptionHandler{
     */
 
     @ExceptionHandler(value={EntityNotFoundException.class})
-    public ResponseEntity<Object> handleBookNotFoundException(EntityNotFoundException e) {
+    public ResponseEntity<Object> handleBookNotFoundException(EntityNotFoundException exception) throws Exception {
 
         HttpStatus notFound = HttpStatus.NOT_FOUND;
-
         ApplicationContext context = new AnnotationConfigApplicationContext(BookStoreException.class);
-        BookStoreException bookStoreException = context.getBean(BookStoreException.class); 
 
-        bookStoreException.setMessage(e.getMessage());
-        bookStoreException.setHttpStatus(notFound);
-        bookStoreException.setTimestamp(ZonedDateTime.now());
+        try {
+            BookStoreException bookStoreException = context.getBean(BookStoreException.class); 
 
-        ((AnnotationConfigApplicationContext)context).close();
+            bookStoreException.setMessage(exception.getMessage());
+            bookStoreException.setHttpStatus(notFound);
+            bookStoreException.setTimestamp(ZonedDateTime.now());
+
+            return new ResponseEntity<Object>(bookStoreException, notFound);
+            
+        } catch (Exception e) {
+           throw e;
+        } finally {
+            ((AnnotationConfigApplicationContext)context).close();
+        }
+
         
-        return new ResponseEntity<Object>(bookStoreException, notFound);
     }
 
 
@@ -45,20 +52,26 @@ public class BookStoreExceptionHandler extends ResponseEntityExceptionHandler{
         ConstraintViolationException.class,
         DataIntegrityViolationException.class
         })
-    public ResponseEntity<Object> handleMissingInformationException(InformationNotCorrectException e) {
+    public ResponseEntity<Object> handleMissingInformationException(InformationNotCorrectException exception) throws Exception {
 
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
-
         ApplicationContext context = new AnnotationConfigApplicationContext(BookStoreException.class);
-        BookStoreException bookStoreException = context.getBean(BookStoreException.class); 
         
-        bookStoreException.setMessage(e.getMessage());
-        bookStoreException.setHttpStatus(badRequest);
-        bookStoreException.setTimestamp(ZonedDateTime.now());
+        try {
+            BookStoreException bookStoreException = context.getBean(BookStoreException.class); 
+        
+            bookStoreException.setMessage(exception.getMessage());
+            bookStoreException.setHttpStatus(badRequest);
+            bookStoreException.setTimestamp(ZonedDateTime.now());
 
-        ((AnnotationConfigApplicationContext)context).close();
-        
-        return new ResponseEntity<Object>(bookStoreException, badRequest); 
+            return new ResponseEntity<Object>(bookStoreException, badRequest); 
+
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            ((AnnotationConfigApplicationContext)context).close();
+        }
+   
     }
     
 }

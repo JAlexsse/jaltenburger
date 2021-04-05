@@ -14,17 +14,21 @@ import ayi.bookstore.services.UpdateServices;
 @RestController
 public class UpdateController {
     
-    @Autowired
     private UpdateServices updateServices;
+
+    @Autowired
+    public UpdateController(UpdateServices updateServices) {
+        this.updateServices = updateServices;
+    }
 
     /* 
     Llama al servicio para cambiar el nombre del libro del cual se proporciona la id.
     */
     @PutMapping("/admin/modifybook")
     @PreAuthorize("hasAuthority('book:write')")
-    public boolean modifyBookName(@RequestBody InitElement initElement) {
+    public boolean modifyBook(@RequestBody InitElement initElement) {
         
-        return updateServices.modifyBookName(initElement.getName(), initElement.getPrice(), initElement.getBook_id());
+        return updateServices.modifyBook(initElement.getName(), initElement.getPrice(), initElement.getBook_id());
               
     }
 

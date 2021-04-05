@@ -11,20 +11,21 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @Controller
 public class SearchController {
 
-    @Autowired
     private SearchServices searchServices;
+
+    @Autowired
+    public SearchController(SearchServices searchServices) {
+        this.searchServices = searchServices;
+    }
 
     /* 
     Llama al servicio para buscar un libro atraves de la id proporcionada.
     */
     @GetMapping("/user/searchbook/{id}")
-    @PreAuthorize("hasAuthority('book:read')")
     public String returnBook(@PathVariable(name = "id") int id, Model model) {
         try {
             Book book = searchServices.getBookData(id);
@@ -45,7 +46,6 @@ public class SearchController {
     Llama al servicio para cambiar el nombre del libro del cual se proporciona la id.
     */
     @GetMapping("/user/authorbooks/{id}")
-    @PreAuthorize("hasAuthority('author:read')")
     public String authorBooks(@PathVariable(name = "id") int id, Model model) {
         try {
 
@@ -69,9 +69,9 @@ public class SearchController {
     Llama al servicio para buscar un libro atraves de la id proporcionada
     y devuelve: el libro y su precio calculado con impuestos.
     */
-    @GetMapping("/admin/bookprices")
+    @GetMapping("/admin/bookprices/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String bookPrices(@RequestParam(name = "id") int id, Model model) {
+    public String bookPrices(@PathVariable(name = "id") int id, Model model) {
         try {
             Book book = searchServices.getBookData(id);
 

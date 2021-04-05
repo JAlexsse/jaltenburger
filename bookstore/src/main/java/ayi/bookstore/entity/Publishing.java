@@ -39,6 +39,7 @@ public class Publishing {
     public Publishing(String name, Adress adress){
         super();
         this.publishing_name = name;
+        this.adress = adress;
     }
 
 }

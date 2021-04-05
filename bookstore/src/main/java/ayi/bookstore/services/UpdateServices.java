@@ -1,12 +1,17 @@
 package ayi.bookstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import ayi.bookstore.entity.Book;
 import ayi.bookstore.exceptions.EntityNotFoundException;
 import ayi.bookstore.exceptions.InformationNotCorrectException;
 import ayi.bookstore.repository.BookRepository;
+
+/*
+Best Practice: asegurar en la capa de servicios.
+*/
 
 @Service
 public class UpdateServices {
@@ -20,7 +25,8 @@ public class UpdateServices {
     Si tiene exito devuelve: Sucess.
     Si no lo tiene: Failed.
     */
-    public boolean modifyBookName(String name, double price, int id) {
+    @PreAuthorize("hasAuthority('book:write')")
+    public boolean modifyBook(String name, double price, int id) {
         
         try {
             Book book = bookRepository.findById(id).get();
@@ -40,6 +46,7 @@ public class UpdateServices {
     Si tiene exito devuelve: Sucess.
     Si no lo tiene: Failed.
     */
+    @PreAuthorize("hasAuthority('book:write')")
     public boolean deleteBook(int id) {
         try {
 
