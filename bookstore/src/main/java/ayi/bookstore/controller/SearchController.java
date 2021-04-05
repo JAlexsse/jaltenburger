@@ -1,30 +1,34 @@
 package ayi.bookstore.controller;
 
-import ayi.bookstore.model.*;
-import ayi.bookstore.services.OperationServices;
+import ayi.bookstore.entity.*;
+import ayi.bookstore.services.SearchServices;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class SearchController {
 
+    private SearchServices searchServices;
+
     @Autowired
-    private OperationServices operationServices;
+    public SearchController(SearchServices searchServices) {
+        this.searchServices = searchServices;
+    }
 
     /* 
     Llama al servicio para buscar un libro atraves de la id proporcionada.
     */
-    @GetMapping("/searchbook")
-    public String returnBook(@RequestParam(name = "id") int id, Model model) {
+    @GetMapping("/user/searchbook/{id}")
+    public String returnBook(@PathVariable(name = "id") int id, Model model) {
         try {
-            Book book = operationServices.getBookData(id);
+            Book book = searchServices.getBookData(id);
 
             model.addAttribute("book", book);
 
@@ -41,31 +45,11 @@ public class SearchController {
     /* 
     Llama al servicio para cambiar el nombre del libro del cual se proporciona la id.
     */
-    @GetMapping("/modifybook")
-    public String modifyBookName(@RequestParam(name = "id") int id,
-                                @RequestParam(name = "name") String name, 
-                                Model model) {
-        try {
-            model.addAttribute("message", operationServices.modifyBookName(name, id));
-            model.addAttribute("bookafter", operationServices.getBookData(id));
-            return "modifybook";
-            
-        } catch (Exception e) {
-            String error = e.getMessage();
-
-            model.addAttribute("message", error);
-            return "error";
-        }       
-    }
-
-    /* 
-    Llama al servicio para cambiar el nombre del libro del cual se proporciona la id.
-    */
-    @GetMapping("/authorbooks")
-    public String authorBooks(@RequestParam(name = "id") int id, Model model) {
+    @GetMapping("/user/authorbooks/{id}")
+    public String authorBooks(@PathVariable(name = "id") int id, Model model) {
         try {
 
-            Author author = operationServices.getAuthor(id);
+            Author author = searchServices.getAuthor(id);
             List<Book> books= author.getBook();
 
             model.addAttribute("author_name", author.getAuthor_name());
@@ -80,22 +64,29 @@ public class SearchController {
             return "error";
         }       
     }
-    
+
     /* 
-    Llama al servicio para cambiar el nombre del libro del cual se proporciona la id.
+    Llama al servicio para buscar un libro atraves de la id proporcionada
+    y devuelve: el libro y su precio calculado con impuestos.
     */
-    @GetMapping("/deletebook")
-    public String deleteBook(@RequestParam(name = "id") int id, Model model) {
+    @GetMapping("/admin/bookprices/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public String bookPrices(@PathVariable(name = "id") int id, Model model) {
         try {
-            model.addAttribute("message", operationServices.deleteBook(id));
-            return "deleteBook";
+            Book book = searchServices.getBookData(id);
+
+            model.addAttribute("book", book);
+            model.addAttribute("priceTaxed", book.calculatePrice());
+
+            return "bookPrices";
             
         } catch (Exception e) {
             String error = e.getMessage();
 
             model.addAttribute("message", error);
             return "error";
-        }       
+        }
     }
+
     
 }

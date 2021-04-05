@@ -4,23 +4,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>Spring Boot Thymeleaf Hola Mundo Sample</title>
+    <title>Spring Boot Thymeleaf + Securitye</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">    <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <link rel="stylesheet" href="/css/main.css"/>
 
 </head>
 
 <body>
 
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="#">Curso AyiGroup</a>
+    <a class="navbar-brand" href="/home">Curso AyiGroup</a>
 </nav>
 
 <main role="main" class="container">
 
     <div class="starter-template">
-        <h1>Spring Boot Web Thymeleaf Sample</h1>
+        <h1>Spring Boot Web Thymeleaf + Security</h1>
         <h2>Book Data</h2>        
     </div>
     <div class="center">
@@ -30,6 +30,7 @@
                     <th>Name</th>
                     <th>Author</th>
                     <th>Publishing</th>
+                    <th>Price</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,14 +38,17 @@
                     <td th:text="${book.book_name}"></td>
                     <td th:text="${book.author.author_name}"></td>
                     <td th:text="${book.publishing.publishing_name}"></td>
+                    <td th:text="${book.price}"></td>
                 </tr>
             </tbody>
         </table>
     </div>
 
 </main>
-<!-- /.container -->
 
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 </body>
+<footer>
+    <div th:replace="fragments/footer :: footer"></div>
+</footer>
 </html>

@@ -1,19 +1,27 @@
 package ayi.bookstore.services;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import ayi.bookstore.model.Author;
-import ayi.bookstore.model.Book;
-import ayi.bookstore.model.Publishing;
+import ayi.bookstore.entity.Author;
+import ayi.bookstore.entity.Book;
+import ayi.bookstore.entity.Publishing;
+import ayi.bookstore.exceptions.EntityNotFoundException;
+import ayi.bookstore.exceptions.InformationNotCorrectException;
+import ayi.bookstore.model.Adress;
 import ayi.bookstore.repository.AuthorRepository;
 import ayi.bookstore.repository.BookRepository;
 import ayi.bookstore.repository.PublishingRepository;
 
+/*
+Best Practice: asegurar en la capa de servicios.
+*/
+
 @Service
-public class RestOperationServices {
+public class CreateServices {
     
     @Autowired
     private BookRepository bookRepository;
@@ -31,22 +39,23 @@ public class RestOperationServices {
     Luego guarda esta instancia en la tabla de Book. 
     Si tiene exito devuelve el String Sucess, de otro modo devuelve el String Failed.
     */
-    public String createBook(String name, int author_id, int publishing_id){
+    @PreAuthorize("hasAuthority('book:write')")
+    public String createBook(String name, int author_id, double price, int publishing_id){
         try {
 
-            Optional<Author> authorSearched = authorRepository.findById(author_id);
-            Author author = authorSearched.get();
+            Author author = authorRepository.findById(author_id)
+            .orElseThrow(() -> new EntityNotFoundException("The id does not match with any author on data base"));
 
-            Optional<Publishing> publishingSearched = publishingRepository.findById(publishing_id);
-            Publishing publishing = publishingSearched.get();
-
-            Book newBook = new Book(name, author, publishing);
+            Publishing publishing = publishingRepository.findById(publishing_id)
+            .orElseThrow(() -> new EntityNotFoundException("The id does not match with any author on data base"));
+            
+            Book newBook = new Book(name, author, price, publishing);
             bookRepository.save(newBook);
 
             return "Sucess";
             
         } catch (Exception e) {
-            return "Failed.";
+            return e.getMessage();
         }
     }
 
@@ -59,7 +68,8 @@ public class RestOperationServices {
     Luego guarda esta instancia en la tabla de Book. 
     Si tiene exito devuelve el String Sucess, de otro modo devuelve el String Failed.
     */
-    public String createBook(String name, String author_name, String publishing_name){
+    @PreAuthorize("hasAuthority('book:write')")
+    public String createBook(String name, String author_name, double price, String publishing_name){
         try { 
             Author author = authorRepository.findByAuthorName(author_name);
             Publishing publishing = publishingRepository.findByPublishingName(publishing_name);
@@ -74,17 +84,16 @@ public class RestOperationServices {
             if(publishing != null){
 
             }else{
-                createPublishing(publishing_name);
-                publishing = publishingRepository.findByPublishingName(publishing_name);
+                throw new InformationNotCorrectException("The publishing has to be registered before.");
             }
             
-            Book newBook = new Book(name, author, publishing);
+            Book newBook = new Book(name, author, price, publishing);
             bookRepository.save(newBook);
 
             return "Sucess";
             
         } catch (Exception e) {
-            return "Failed.";
+            return e.getMessage();
         }
     }
 
@@ -94,17 +103,28 @@ public class RestOperationServices {
     Si tiene éxito devuelve la información guardada: id y nombre.
     Si no lo tiene devuelve: It didn't work.
     */
-    public String createPublishing(String name){
+    @PreAuthorize("hasAuthority('publishing:write')")
+    public boolean createPublishing(String name, int number, String street, int zipCode){
+        
+        ApplicationContext context = new AnnotationConfigApplicationContext(Adress.class);
+
         try {
+            Adress adress = context.getBean(Adress.class);
+
+            adress.setNumber(number);
+            adress.setStreet(street);
+            adress.setZipCode(zipCode);
             
-            Publishing newPublishing = new Publishing(name);
+            Publishing newPublishing = new Publishing(name, adress);
             publishingRepository.save(newPublishing);
 
-            return "Sucess: id: " + newPublishing.getPublishing_id() + " name: " + newPublishing.getPublishing_name();
+            return true;
             
         } catch (Exception e) {
-            return "It didn't work.";
-        }     
+            throw new InformationNotCorrectException("The information provided is not correct.");
+        }   finally {
+            ((AnnotationConfigApplicationContext)context).close();
+        }  
     }
 
     /* 
@@ -113,13 +133,14 @@ public class RestOperationServices {
     Si tiene éxito devuelve la información guardada: id y nombre.
     Si no lo tiene devuelve: It didn't work.
     */
+    @PreAuthorize("hasAuthority('author:write')")
     public String createAuthor(String name){
         try {
 
             Author newAuthor = new Author(name);
             authorRepository.save(newAuthor);
 
-            return "Sucess: id: " + newAuthor.getAuthor_id() + " name: " + newAuthor.getAuthor_name();
+            return "Sucess";
             
         } catch (Exception e) {
             return "It didn't work.";

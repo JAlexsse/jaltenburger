@@ -1,0 +1,20 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+</head>
+<body>
+<div th:fragment="footer">
+
+    <div class="row center footer-dark">
+
+        <footer>
+            <span class="btn btn-lg btn-warning btn-block" sec:authorize="isAuthenticated()">
+                <a href="/logout">Sign Out</a>
+            </span>
+
+        </footer>
+    </div>
+
+</div>
+</body>
+</html>
