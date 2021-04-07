@@ -135,3 +135,43 @@ BEGIN
     CLOSE productos_pedido;
     
 END;
+
+/
+
+DECLARE
+    --cliente del cual se quiere buscar pedidos
+    cliente_seleccionado pedidos.codigocliente%TYPE := &cliente;
+    
+    --variables para iterar el cursor
+    cantidad_record detallepedidos.cantidad%TYPE;
+    preciounidad_record detallepedidos.preciounidad%TYPE;
+    
+    total_pedidos detallepedidos.preciounidad%TYPE := 0;
+    
+    /*
+    cursor que trae los records de detalles de pedidos 
+    correspondientes al cliente seleccionado.
+    */
+    CURSOR detalle_pedido IS
+        SELECT cantidad, preciounidad 
+        FROM detallepedidos 
+        INNER JOIN pedidos
+        ON detallepedidos.codigopedido = pedidos.codigopedido
+        WHERE pedidos.codigocliente = cliente_seleccionado;
+BEGIN
+  OPEN detalle_pedido;
+  
+  FETCH detalle_pedido INTO cantidad_record, preciounidad_record;
+  WHILE detalle_pedido%FOUND
+  LOOP
+    total_pedidos := total_pedidos + (cantidad_record * preciounidad_record);
+    FETCH detalle_pedido INTO cantidad_record, preciounidad_record;
+  END LOOP;
+  
+  CLOSE detalle_pedido;
+  
+  DBMS_OUTPUT.PUT_LINE( 
+            'Total: ' || total_pedidos
+        );
+  
+END;
