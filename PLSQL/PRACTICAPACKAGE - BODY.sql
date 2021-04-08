@@ -1,3 +1,5 @@
+SET SERVEROUTPUT ON;
+
 CREATE OR REPLACE PACKAGE BODY practica_package IS
    
     FUNCTION empleados_oficina(oficina_seleccionada oficinas.ciudad%TYPE)
@@ -39,7 +41,7 @@ CREATE OR REPLACE PACKAGE BODY practica_package IS
         WHERE productos.codigoproducto = codigo_producto;
         
         DBMS_OUTPUT.PUT_LINE(
-            'La gama m·s solicitada es: ' || gama || ' con ' 
+            'La gama m√°s solicitada es: ' || gama || ' con ' 
             || cantidad || ' unidades solicitadas.'
         );
     END gama_mas_solicitada;
