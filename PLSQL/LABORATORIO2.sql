@@ -1,4 +1,4 @@
-
+SET SERVEROUTPUT ON;
 /*
     EJERCICIO 1
     Crear un cursor que muestre todos los clientes que no hayan realizado pagos.
@@ -32,9 +32,10 @@ END;
 
 /
 
+SET SERVEROUTPUT ON;
 /*
     EJERCICIO 2
-    Crear una función que devuelva la suma de pagos que realizó un cliente dado. 
+    Crear una funciÃ³n que devuelva la suma de pagos que realizÃ³ un cliente dado. 
     Pasar por param el codigo. Considerar cuando no se encuentre registros.
 */
 
@@ -61,6 +62,7 @@ END;
 
 /
 
+SET SERVEROUTPUT ON;
 --Llamado de ejercicio 2
 DECLARE
     cliente_solicitado clientes.codigocliente%TYPE := &codigo;
@@ -82,10 +84,11 @@ END;
 
 /
 
+SET SERVEROUTPUT ON;
 /*
 
 EJERCICIO 3
-Realizar un método o procedimiento que muestre el total en euros de un pedido.
+Realizar un mÃ©todo o procedimiento que muestre el total en euros de un pedido.
 Codigo pasado por param.
 */
 
@@ -114,6 +117,7 @@ END;
 
 /
 
+SET SERVEROUTPUT ON;
 --Llamado de ejercicio 3
 DECLARE
     pedido_solicitado pedidos.codigopedido%TYPE := &codigo;
@@ -123,6 +127,7 @@ END;
 
 /
 
+SET SERVEROUTPUT ON;
 /*
 EJERCICIO 4
 Realizar un procedimiento que muestre el total en euros de un pedido. 
@@ -182,6 +187,7 @@ EXCEPTION
 END;
 
 /
+SET SERVEROUTPUT ON;
 
 --Llamado de ejercicio 4
 DECLARE
