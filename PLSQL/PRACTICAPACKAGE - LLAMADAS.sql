@@ -1,6 +1,6 @@
 
 /*
-Llamada a funcion del package: laboratorio3.
+Llamada a funcion del package: practica_package.
 */
 DECLARE
     oficina_seleccionada oficinas.ciudad%TYPE := 'Barcelona';
@@ -9,7 +9,7 @@ DECLARE
     puesto_empleado empleados.puesto%TYPE;
 BEGIN
     empleados_seleccionados := 
-        laboratorio3.empleados_oficina(oficina_seleccionada);
+        practica_package.empleados_oficina(oficina_seleccionada);
     
     LOOP
         FETCH empleados_seleccionados 
@@ -27,8 +27,8 @@ END;
 /
 
 /*
-Llamada al procedure del package: laboratorio3.
+Llamada al procedure del package: practica_package
 */    
 BEGIN
-    laboratorio3.gama_mas_solicitada;
+    practica_package.gama_mas_solicitada;
 END;
