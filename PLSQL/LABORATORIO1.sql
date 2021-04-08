@@ -1,3 +1,4 @@
+SET SERVEROUTPUT ON;
 --CLASE 1 : PLSQL
 DECLARE
     -- Declaracion de variables
@@ -20,6 +21,7 @@ END;
 
 /
 
+SET SERVEROUTPUT ON;
 --CLASE 2: PLSQL - CURSOR IMPLICITO
 
 DECLARE
@@ -47,6 +49,7 @@ END;
 
 /
 
+SET SERVEROUTPUT ON;
 --CLASE 2: PLSQL - CURSOR EXPLICITO
 DECLARE
   -- Declaracion de variables
@@ -98,6 +101,7 @@ END;
 
 /
 
+SET SERVEROUTPUT ON;
 --CLASE 2: CURSOR EXPLICITO PARAMETRIZADO
 
 DECLARE
@@ -137,6 +141,8 @@ BEGIN
 END;
 
 /
+
+SET SERVEROUTPUT ON;
 
 DECLARE
     --cliente del cual se quiere buscar pedidos
