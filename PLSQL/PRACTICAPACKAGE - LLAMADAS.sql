@@ -1,4 +1,5 @@
 
+SET SERVEROUTPUT ON;
 /*
 Llamada a funcion del package: practica_package.
 */
@@ -26,6 +27,7 @@ END;
 
 /
 
+SET SERVEROUTPUT ON;
 /*
 Llamada al procedure del package: practica_package
 */    
