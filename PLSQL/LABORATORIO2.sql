@@ -1,4 +1,5 @@
 SET SERVEROUTPUT ON;
+
 /*
     EJERCICIO 1
     Crear un cursor que muestre todos los clientes que no hayan realizado pagos.
@@ -33,6 +34,7 @@ END;
 /
 
 SET SERVEROUTPUT ON;
+
 /*
     EJERCICIO 2
     Crear una función que devuelva la suma de pagos que realizó un cliente dado. 
@@ -63,6 +65,7 @@ END;
 /
 
 SET SERVEROUTPUT ON;
+
 --Llamado de ejercicio 2
 DECLARE
     cliente_solicitado clientes.codigocliente%TYPE := &codigo;
@@ -85,6 +88,7 @@ END;
 /
 
 SET SERVEROUTPUT ON;
+
 /*
 
 EJERCICIO 3
@@ -96,6 +100,9 @@ CREATE OR REPLACE PROCEDURE total_en_euros
 (pedido_requerido IN pedidos.codigopedido%TYPE)
 IS
     total_pedido detallepedidos.preciounidad%TYPE := 0;
+    
+    pedido_no_existe EXCEPTION;
+    PRAGMA EXCEPTION_INIT (pedido_no_existe, -20013);
     
     CURSOR pedido IS
         SELECT detallepedidos.cantidad, detallepedidos.preciounidad
@@ -113,14 +120,26 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE(
         'El total en euros es: ' || total_pedido
     );
+    
+    IF (total_pedido = 0)
+    THEN
+        RAISE pedido_no_existe;
+    END IF;
+
+EXCEPTION
+    WHEN pedido_no_existe THEN
+        DBMS_OUTPUT.PUT_LINE(
+        'El pedido no esta registrado.'
+    );
 END;
 
 /
 
 SET SERVEROUTPUT ON;
+
 --Llamado de ejercicio 3
 DECLARE
-    pedido_solicitado pedidos.codigopedido%TYPE := &codigo;
+    pedido_solicitado pedidos.codigopedido%TYPE := &pedido;
 BEGIN
     total_en_euros(pedido_solicitado);
 END;
@@ -128,6 +147,7 @@ END;
 /
 
 SET SERVEROUTPUT ON;
+
 /*
 EJERCICIO 4
 Realizar un procedimiento que muestre el total en euros de un pedido. 
@@ -187,6 +207,7 @@ EXCEPTION
 END;
 
 /
+
 SET SERVEROUTPUT ON;
 
 --Llamado de ejercicio 4
