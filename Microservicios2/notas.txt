@@ -1,0 +1,179 @@
+Microservicios
+
+Caracteristicas
+-Funcion única
+-Independientes
+-Registro y auto-descubrimiento de servicios
+-Auto escalable y agilidad, escalable segun demanda
+-Confiabilidad y tolerancia a fallos, caminos alternativos en caso de falla
+-Balanceo de cargas, cuando hay varias instancias (Ribbon)
+-Configuración centralizada, mucha configuración en forma independiente por ello hay que centralizarla (Spring Cloud Config) 
+
+Ventajas
+-Innovación: la posibilidad adoptar nuevas tecnologias (lenguajes, frameworks, etc.) y procesos
+-Reducción de costo: debido al autoescalamiento dinámico, solo se usa lo que se requiere durante el tiempo que se lo necesite
+-Ciclos de liberación más rápidos: ya que se desarrollan componentes más pequeños
+-Equipos de desarrollo más pequeños, más especializado.
+
+Nombre del microservicio
+En application properties establecemos un nombre, un identificador, para que el Eureka Server pueda acceder a este recurso mediante el y no através de su ubicación, de la IP ni del puerto. Este nombre también se utiliza en el balanceo de cargas.
+
+spring.application.name=servicio-productos
+server.port=8081
+
+RestTemplate
+Es un cliente para trabajar con API REST. Es un cliente HTTP para poder acceder a recursos que están en otros micro servicios.
+
+Streams
+Las listas tienen el metodo stream. Convierte la lista en un flujo.
+Con map podemos cambiar cada elemento, se le pasara como argumento una expresión lambda.
+
+TECNOLOGIA: FEIGN
+Simple. Utiliza interfaces y notaciones declarativas.
+Se integra con el balanceo de carga de Ribbon.
+Viene configurado en los clientes de Eureka.
+
+@EnableFeignClients -> notacion que va en Application.
+@FeignClient(name="nombre del micro servicio al cual nos queremos conectar") -> notacion con la cual se define un cliente.
+
+Los Mapping en los controller los usamos para mappear nuestros metodos handdler a endpoint a rutas url. Mientras, en el Feign  Client, indicamos la ruta end point para condumir el servicio. 
+
+TECNOLOGIA: RIBBON
+Para balanceo de cargas.
+Se puede desacoplar el cliente de FEIGN con el puerto. Aunque en este punto siguen existiendo, ya no estan en el codigo los puertos, si no que se encuentran en los properties.
+Se va a tener más de una instancia con la cual nos queremos comunicar, en estos casos Ribbon ayudara a decidir cual instancia es la mejor opción en un determinado momento.
+
+@RibbonClient vs @RibbonClients
+Cuando tenemos más de una clase cliente feign anotada con @FeignClient se usa en plural.
+
+application.properties
+nombre-del-servicio-a-conectar.ribbon.listOfServer=localhost:8081, localhost:9001
+
+Para utilizar el balanceo de cargas de Ribbon con RestTemplate se utiliza la notacion: @LoadBalanced en la clase de configuracion, en el cliente que levantamos con @Bean.
+
+TECNOLOGIA: EUREKA
+Los clientes cuando se despliegan se comunican con Eureka Server y van a registarse con el nombre de la maquina o la IP, y el puerto. Como respuesta Eureka Server, una vez que estan registrados, va a pasar el registro completo a los demás microservicios que estan registrados en este ecosistema, de tal forma que puedan comunicarse y escalar forma independiente sin especificar ni puerto, nombre de dominio, IP, etc.
+
+Eureka se registra como cliente y como servidor. Si queremos implementar alguna funcionalidad dejamos el por defecto, pero si no, seteamos en properties el cliente como false, asi como tambien su fetch.
+
+Si se utiliza JDK 9 en adelante se debe agregar una dependencia en el pom: JAXB.
+
+La buscamos en la ultima version estable de spring cloud 
+-> Reference Doc.
+verificacmos hasta que version spring boot suporta y modificamos en el pom: 
+	->Supported Boot Version: 2.4.3
+->spring-cloud-netflix
+->Service Discovery: Eureka Server
+->JDK 11 Support
+
+https://docs.spring.io/spring-cloud-netflix/docs/3.0.2/reference/html/
+
+<dependency>
+    <groupId>org.glassfish.jaxb</groupId>
+    <artifactId>jaxb-runtime</artifactId>
+</dependency>
+
+
+Y habilitamos en EurekaServerApplication el server con la notacion:
+@EnableEurekaServer
+
+Para habilitar clientes:
+Agregamos la dependencia para clientes.
+<dependency>
+	<groupId>org.glassfish.jaxb</groupId>
+	<artifactId>jaxb-runtime</artifactId>
+</dependency>
+
+y agregar:
+<dependencyManagement>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-dependencies</artifactId>
+			<version>Greenwich.SR1</version>
+			<type>pom</type>
+			<scope>import</scope>
+		</dependency>
+	</dependencies>
+</dependencyManagement>
+
+y habilitamos el cliente en el Application con la notacion:
+@EnableEurekaClient
+
+En applicacion.properties podemos especificar cual es nuestro servidor de eureka, aunque es opcional siempre y cuando el eureka server este en el mismo servidor que los clientes. Si estan en distintas maquinas, es obligatorio especificar su ubicacion fisica: nombre de dominio o la maquina y el puerto. 
+
+eureka.client.service-url.defaultZone=http://localhost:8761/eureka
+
+Necesitamos su ubicacion para que cuando los clientes intenten comunicarse con el mandando un heartbeat este les comunique su habilitacion.
+
+	INVESTIGAR : HEARTBEAT
+	Los microservicios se registran de forma automatica mandando una 	señal.
+	Luego, cada 30 segundos, mandan una nueva para actualizar.
+	Si pasan más de 3 periodos sin mandar señal, el registro del 	microservicio se elimina.
+	Si vuelve ha querer registrarse, luego de haber sido eliminado, 		necesitara enviar 3 señales (90 segundos) para que quedo habilitado 	nuevamente en el servidor de eureka.
+
+Eureka tiene incluido Ribbon asi que no hace falta agregar la dependency y otras configuraciones (por ej. ombre-del-servicio-a-conectar.ribbon.listOfServer=localhost)de Ribbon si tenemos la de eureka.
+
+Con esto desacoplamos completamente la ubicacion fisica, queda totalmente abstraido.
+
+ESCALAR MICROSERVICIOS CON PUERTO DINAMICO
+Para no escribir de forma explicita el puerto en application.properties lo automatizamos:
+server.port=${PORT:0}
+Con esto se asigna a un valor random, lo asigna la aplicacion a un puerto que este disponible.
+
+Configurar la instancia en Eureka:
+eureka.instance.instance-id=${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+Esta configuracion es utilizada en los microservicios que vamos a querer escalar, donde vamos a tener varias instancias y vamos a tener que hacer un balanceo de carga.
+
+	RECORDAR: que para ejecutar las instancias hay que sacar los "vmArgs" 	del launch.json
+
+HERRAMIENTA HYSTRIX
+Herramienta que permite manejar errores en microservicios. Gestiona la comunicacion entre los servicios y añade la logica de tolerancia de fallos, latencia, timeout, etc. 
+
+Funciona con un limite de errores, pasado ese limite ya no deriva mas peticiones a ese micro servicio o a esa instancia. Permite, ademas, tener un camino alternativo, implementar logicas por defecto en caso de error, para evitar errores en cascada.
+	
+	PATRON: CIRCUIT BREAKER
+
+Dependencias:
+ -Hystrix
+ -Hystrix Dashboard (para monitorear errores, los request exitosos, metricas de errores para poder analizar, detectar y solucionar los problemas de nuestro sistema)
+
+<dependency>
+	<groupId>org.springframework.cloud</groupId>
+	<artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+</dependency>
+
+Para habilitarlo:
+Tenemos que agregar la notacion en la Application:
+@EnableCircuitBreaker
+
+Para hacer caminos alternativos en caso de falla se usa:
+@HystrixCommand(fallbackMethod = "alternativeMethod")
+sobre el metodo que se quiere asegurar.
+Luego se escribe un metodo con el nombre provisto que sea similar al cual no pudo ejecutarse (mismos argumentos y retorno).
+Este se activara cuando el primero falle.
+
+HYSTRIX Y RIBBON
+Para administrar pausas.
+Para poder configurarlos hay que modificar ambos, por que los dos tienen sus propios Time outs.
+Tener en cuenta que Hystrix envuelve a Ribbon y por lo tanto debe tener un tiempo de espera mayor que el de Ribbon.
+
+->spring.io
+->projects
+->spring cloud netflix
+->learn
+->elegir ultima GA estable -> reference doc.
+->router and filter: zuul
+->uploading files through zuul
+
+->se aplica al application.properties del servicio que se comunica con el cliente
+-recordando que el tiempo de hystrix debe ser mayor que la suma de los de ribbon.
+hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000
+ribbon.ConnectTimeout: 3000
+ribbon.ReadTimeout: 60000
+
+LIBRERIA ZUUL
+Trabaja de forma automatica con Hystrix y Ribbon.
+Se crea un proyecto micro servicio que se encarga del acceso al resto de los servicios que estan deplegados, publicados en el servidor de eureka.
+La puerta de enlace.

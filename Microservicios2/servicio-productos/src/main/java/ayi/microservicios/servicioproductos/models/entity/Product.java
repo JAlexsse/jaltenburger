@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name="products")
@@ -25,6 +26,10 @@ public class Product{
     @Column(name = "create_at")
     @Temporal(TemporalType.DATE)
     private Date createAt;
+
+    //para visualizar que puerto esta usando Ribbon
+    @Transient //indica que el atributo no es persistente, no esta mappeado a ningun campo en la db
+    private Integer port;
     
     public Product(){
 
@@ -35,6 +40,14 @@ public class Product{
         this.name = name;
         this.price = price;
         this.createAt = createAt;
+    }
+
+    public Integer getPort() {
+        return port;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
     }
 
     public Long getId() {
