@@ -17,3 +17,10 @@ PROBLEMAS
 	(Funciona)
 3- @Value no trae valor especificado de application.properties 
 	SOLUCIÓN: @PropertySource(value="application.properties")
+4- org.springframework.cloud.client.discovery.health.DiscoveryCompositeHealthIndicator no existe
+	SOLUCIÓN: cambiar versión de spring boot 2.3.4 -> 2.2.2.RELEASE (No funciono)
+	SOLUCIÓN: https://stackoverflow.com/questions/58546540/upgraded-spring-boot-from-2-1-9-to-2-2-0-now-getting-exception-while-starting
+	Incompatibilidad spring boot - spring cloud
+	cambiar version spring cloud -> Greenwich -> Hoxton (Funciono)
+
+

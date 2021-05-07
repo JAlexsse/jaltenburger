@@ -177,3 +177,78 @@ LIBRERIA ZUUL
 Trabaja de forma automatica con Hystrix y Ribbon.
 Se crea un proyecto micro servicio que se encarga del acceso al resto de los servicios que estan deplegados, publicados en el servidor de eureka.
 La puerta de enlace.
+
+-Caracteristica mas importante: Enrutamiento dinamico
+Va a enrutar a cada uno de los mmicroservicios que esten registrados en el servidor de eureka.
+
+-Se integra de forma automatica con Ribbon:
+Todas las peticiones que realiza son atraves de balanceo de cargas.
+
+-Tiene filtros
+Por ejemplo:
+ *) tiene un filtro apra dar seguridad a las rutas. En vez de configurar  en spring security en cada servicio de forma separada. Lo configuramos una sola vez en nuestra puerta de enlace.
+*) tambien tiene filtros para monitorear distintas metricas.
+*) manejar tolerancia de errores.
+
+Con esto podemos acceder a nuestros servicios desde la puerta de enlace, desde zuul, con el enrutado dinámico. Ya no es necesario ingresar a cada microservicio por separado. Arquitectura que centraliza sus microservicios.
+
+Tipos de filtros de Zuul:
+1) PRE - Pre route : Antes que se resuelva la ruta. Se ejecuta antes de que el request sea enrutado hacia un microservicio. Se usa para pasar datos al request.
+2) POST - Post route: Se ejecuta después de que el request haya sido enrutado. Se utiliza para manipular la respuesta.
+3) ROUTE : Se ejecuta durante el enrutado del request, aquí se resuelve la ruta. Se usa para la comunicación con el microservicio. Se resuelve la ruta al microservicio y se resuelve la request al microservicio enrutado.
+4) ERROR : Nos permite manejar y procesar errores.
+
+Aplicacion de un Filtro:
+EJ. Tiempo Trancurrido
+->Se necesita un filtro pre y uno post. El pre para calcular el tiempo inicial antes del enrutamiento y el post que va a tomar el tiempo del pre y se lo va a restar al tiempo final, obteniendo el tiempo transcurrido en mili segundos.
+
+->Es importante designar a las clases como @Component (como Bean de Spring) y extender de ZuulFilter. Estos dos pasos lo registran automaticamente como Filtro de Zuul.
+
+->Al implementar los metodos de la clase ZuulFilter:
+	1)En filterType devolvemos un String que indica el tipo de filtro. ("pre", "post", "route", "error")
+	2)En Order devolvemos un int que representa el orden de ejecucion.
+	3)En shouldFilter ejecutamos un alguna logica para determinar si ejecutamos el filtro o no, y devolvemos booleano.
+	4) En run se ejecuta la logica del filtro propiamente dicha. 
+
+Para manejar time outs: 
+-> Agregamos en application.properties la configuracion de hystrix y ribbon.
+
+SPRING CLOUD - CONFIG SERVER
+Sirve para centralizar la configuración de todos los micro servicios, a fines de poder administrarla de manera más eficientes.
+
+Por lo general, en una arquitectura de micro servicios, vamos a tener multiples micro servicios, con configuraciones y entornos o ambientes distintos. Esto puede general conflictos a la hora de realizar cambios.
+
+Por defecto, esta configuracion centralizada, se guarda en un repositorio GIT, ya sea de forma local o remota. Pero, tambien, da la posibilidad de administrar los archivos de forma fisica en algun directorio de nuestro servidor sin la utilizacion de GIT.
+
+Funcionamiento:
+->Durante el arranque del micro servicio, primero, antes de registrarse en Eureka va a consultar al servidor de configuración todos sus atributos, propiedades de configuracion. Una vez que las obtiene del repositorio de GIT se va a registrat en Eureka y va a arrancar el micro servicio.
+
+->Ejemplos de configuraciones personalizadas pueden abarcar: puerto, conexiones a base de datos, etc. Cada ambiente o Profile puede tener una configuracion distinta.
+
+Notaciones:
+@EnableConfigServer
+
+Application Properties:
+server.port=8888 (default)
+spring.cloud.config.server.git.uri=
+
+->Si vamos a configurar con repositorio local en Windows: file:///C:/...
+->Si vamos a configurar con repositorio local en Linux: file:/C:/...
+
+Tenemos que crear la carpeta e inicializarlo como repositorio de GIT.
+
+Luego crear los archivos de configuracion desde la terminal: 
+	-> ej: echo server.port=8005 > servicio-items.properties
+
+NOTA: importante no dejar espacios en blanco.
+
+La configuracion en el config server va a sobre escribir la application.properties de los microservicios. Si hay configuraciones que no existen se van a combinar las que existen en el servidor con la personalizada de cada micro servicio.
+
+Al runearlo se:
+->Escribe el puerto 
+->El nombre del micro servicio
+->El ambiente o profile (si no hay ninguno es:default)
+->localhost:8888/servicio-items/default
+
+Para modificar los microservicios, y que estos puedan acceder a las configuraciones del config server:
+->Modificar dependencias-> Agregar Config Client
