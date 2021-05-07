@@ -252,3 +252,20 @@ Al runearlo se:
 
 Para modificar los microservicios, y que estos puedan acceder a las configuraciones del config server:
 ->Modificar dependencias-> Agregar Config Client
+->Modificar application.properties->bootstrap.properties
+->En bootstrap.properties-> 
+	spring.application.name -> el nombre del mmicro servicio
+	spring.cloud.config.uri -> la ruta del servidor de configuracion
+	tambien se agrega aqui el profile.
+->bootstrap tiene prioridad y todo lo que este escrito en application.properties no va a sobreescribir lo de bootstrap.
+
+Configurar ambientes o profiles:
+->Se agregan en el repositorio GIT
+->Se escriben en formato nombreservicio-profile.properties
+->Se agregan en el micro servicio en el bootstrap.properties como:
+	spring.profiles.active=development
+
+Como reflejar cambios en el repositorio local en tiempo real:
+Como reflejar cambios en las configuraciones alamacenadas en nuestro repositorio GIT en tiempo real en nuestros micro servicios, sin tener que reiniciar la aplicacion.
+->Controller ->
+
