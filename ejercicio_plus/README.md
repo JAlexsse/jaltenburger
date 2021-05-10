@@ -1,14 +1,11 @@
-## Getting Started
+## Ejercicio Patterns
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+Objetivo: Implementar Patrones
+-Factory Pattern
+-Strategy Pattern
+-Facade Pattern
 
-## Folder Structure
+# Inquietudes
+-Implementación de Patrones de manera conjunta: ¿Mejor forma de combinar patrones? ¿Reglas? ¿Orden?
 
-The workspace contains two folders by default, where:
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
-
-## Dependency Management
-
-The `JAVA DEPENDENCIES` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-pack/blob/master/release-notes/v0.9.0.md#work-with-jar-files-directly).
