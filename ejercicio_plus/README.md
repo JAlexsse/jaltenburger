@@ -5,4 +5,7 @@ Objetivo: Implementar Patrones
 -Strategy Pattern
 -Facade Pattern
 
+# Inquietudes
+-Implementación de Patrones de manera conjunta: ¿Mejor forma de combinar patrones? ¿Reglas? ¿Orden?
+
 
