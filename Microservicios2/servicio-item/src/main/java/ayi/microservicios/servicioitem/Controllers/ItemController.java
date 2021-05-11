@@ -12,18 +12,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import ayi.microservicios.servicioitem.models.Item;
 import ayi.microservicios.servicioitem.models.Product;
 import ayi.microservicios.servicioitem.models.service.ItemService;
 
+@RefreshScope
 @RestController
 @ImportAutoConfiguration({FeignAutoConfiguration.class})
 public class ItemController {
@@ -40,7 +47,7 @@ public class ItemController {
     Para utilizar la implementacion de RestTemplate cambiar 
     "serviceFeign" -> "serviceRestTemplate"
     */
-    @Qualifier("serviceFeign") 
+    @Qualifier("serviceRestTemplate") 
     private ItemService itemService;
 
     @Value("${configuracion.texto}")
@@ -88,5 +95,23 @@ public class ItemController {
         }
 
         return new ResponseEntity<Map<String, String>>(json, HttpStatus.OK );
+    }
+
+    @PostMapping("/crear")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Product createProduct(@RequestBody Product product) {
+        return itemService.save(product);
+    }
+
+    @PutMapping("/editar/{id}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Product updateProduct(@RequestBody Product product, @PathVariable Long id) {
+        return itemService.update(product, id);
+    }
+
+    @DeleteMapping("/eliminar/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProduct(@PathVariable Long id) {
+        itemService.delete(id);
     }
 }

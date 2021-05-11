@@ -29,7 +29,7 @@
             "name": "Launch ServicioItemApplication",
             "request": "launch",
             "mainClass": "ayi.microservicios.servicioitem.ServicioItemApplication",
-            "projectName": "servicio-item"
+            "projectName": "servicio-items"
         },
         {
             "type": "java",

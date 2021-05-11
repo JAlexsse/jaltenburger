@@ -267,5 +267,48 @@ Configurar ambientes o profiles:
 
 Como reflejar cambios en el repositorio local en tiempo real:
 Como reflejar cambios en las configuraciones alamacenadas en nuestro repositorio GIT en tiempo real en nuestros micro servicios, sin tener que reiniciar la aplicacion.
-->Controller ->
+Anteriormente los cambios que generabamos en la configuración no se veian reflejados inmediatamente en el microservicio, esto se debe al contexto, por que los controladores en donde se inyecta esta configuración son Singleton, por lo tanto, va a durar el cliclo de vida de este componente lo que dure la aplicación, con una sola instancia.
+Un modo de actualizar este componente para que refresque esos cambios y se actualice es a través de @RefreshScope y Actuator:
+Atrevés de un endpoint de Actuator nos permite refescar todos estos componentes que estan anotados con @RefreshScope.
+->Controller ->Se agrega la notacion @RefreshScore -> esto permitira que las application.properties se actualicen automaticamente y, por ejemplo, los valores de @Value cambien sin tener que reiniciar la aplicacion.
+-> Se agrega dependencia Actuator->
+	<dependency>
+        	<groupId>org.springframework.boot</groupId>
+        	<artifactId>spring-boot-starter-actuator</artifactId>
+    	</dependency>
+->Se agrega en bootstrap.properties el endpoint de actuator->
+	management.endpoints.web.exposure.include=*
+	con el asterisco incluimos todos los endpoints de spring 	booot actuator.
 
+Cuando se modifiquen propiedades se tendra que hacer un refresh desde el endpoint de actuator:
+1) localhost:8086/actuator/refresh (8086 configurado en repositorio local)
+2) tiene que ser como POST
+
+Solo podemos cambiar configuracion propias, no asi el puerto, conexiones a base de datos, etc.
+
+REPOSITORIO REMOTO
+Para cambiar por un repositorio remoto en GIT cambiamos en config server la uri por la url del repositorio remoto terminado en .git
+
+CRUD: Consumiento APIS con FEIGN Y REST TEMPLATE
+->Repository -> save() -> si id es null crea el objeto, si el id no es null hace update.
+
+¿Como consumir API mediante REST TEMPLATE?
+->Agregar en la interfaz de service-item metodos para agregar, editar y eliminar
+->Implementarlas en la implementacion de la interfaz
+
+->SAVE()
+->utilizar restTemplate.exchange(endpoint, metodo, request, clase)
+->la request es una HTTPentity<clase>
+->metodo: POST
+
+->UPDATE()
+->Map -> pathVariable -> id
+->utilizar restTemplate.exchange(endpoint/{PathVariable}, metodo, request, clase, pathvariable)
+->la request es una HTTPentity<clase>
+->metodo: PUT
+
+->DELETE()
+->Map -> pathVariable -> id
+->utilizar restTemplate.delete(endpoint/{PathVariable}, pathVariable)
+
+->Implementar mappings en controller
