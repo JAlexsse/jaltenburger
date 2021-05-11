@@ -318,3 +318,38 @@ CRUD: Consumiento APIS con FEIGN Y REST TEMPLATE
 ->Agregar en la interfaz de feignclient los metodos CRUD para consumir API REST
 ->Implementar CRUD en el service de Feign utilizando el cliente fiegn autowired.
 ->Cambiar qualifier en controlador -> clientFeign
+
+SERVICIO COMMONS: REUTILIZAR LIBRERIAS
+->proyecto nuevo con jpa y h2
+->quitamos metodo main, por que es un proyecto de libreria no es un proyecto ejecutable
+->quitamos del pom el plugin de maven
+->realizar clases de entidad
+->generar jar
+->se necesita tener configurado la variable de entorno JAVA_HOME y PATH con la ubicacion del jdk y del jdk/bin respectivamente.
+-> ejecutar en el directorio de commons el comando> mvnw.cmd install
+-> disponible en el repositorio local de maven con lo cual puede agregarse como dependencia en el pom de los otros servicios
+
+jpa exige configuracion de database, pero como es una libreria no nos hace falta la database, una opcion es agregar en el pom h2 por que se configura solo, pero si no queremos agregarlo podemos agregar la notacion EnableAutoConfiguration en la clase principal anotada con springbootaplication.
+
+@EnableAutoConfiguration(exclude={DataSourceConfiguration.class})
+
+Para agregar esta nueva dependencia en otros microservicio tenemos que ir al pom de la libreria y copiar:
+	<groupId>ayi.microservicios</groupId>
+	<artifactId>commons</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+Vamos al pom del microservicio en el cual queremos agregar la libreria y agregamos una nueva dependencia:
+	<dependency>
+		<groupId>ayi.microservicios</groupId>
+		<artifactId>commons</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</dependency>
+
+Luego hay que cambiar los import para que utilicen la libreria.
+->utilizado en products.
+->se puede eliminar el package de entidad
+
+PROBLEMA: La clase de entidad Producto no esta en el mismo conectexto, esta en la libreria, por lo cual hay que configurar el proyecto servicio-producto para que lo detecte y reconozca a Producto.
+
+->En la clase principal anotada con SpringBootApplication en el microservicio que consume la libreria utilizamos el EntityScan y proporcionamos la locación de las clases que vamos a utilizar:
+	@EntityScan({"ayi.microservicios.commons.entity"})
