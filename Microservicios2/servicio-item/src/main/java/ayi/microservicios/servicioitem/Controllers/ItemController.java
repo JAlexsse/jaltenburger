@@ -47,7 +47,7 @@ public class ItemController {
     Para utilizar la implementacion de RestTemplate cambiar 
     "serviceFeign" -> "serviceRestTemplate"
     */
-    @Qualifier("serviceRestTemplate") 
+    @Qualifier("serviceFeign") 
     private ItemService itemService;
 
     @Value("${configuracion.texto}")

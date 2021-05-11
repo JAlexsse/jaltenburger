@@ -312,3 +312,9 @@ CRUD: Consumiento APIS con FEIGN Y REST TEMPLATE
 ->utilizar restTemplate.delete(endpoint/{PathVariable}, pathVariable)
 
 ->Implementar mappings en controller
+->Cambiar qualifier a restTemplate
+
+¿Como consumir API mediante FEIGN?
+->Agregar en la interfaz de feignclient los metodos CRUD para consumir API REST
+->Implementar CRUD en el service de Feign utilizando el cliente fiegn autowired.
+->Cambiar qualifier en controlador -> clientFeign
