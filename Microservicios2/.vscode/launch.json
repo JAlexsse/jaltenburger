@@ -44,6 +44,12 @@
             "request": "launch",
             "mainClass": "ayi.microservicios.zuulserver.ZuulServerApplication",
             "projectName": "zuul-server"
+        },
+        {
+            "type": "java",
+            "name": "Launch MavenWrapperDownloader",
+            "request": "launch",
+            "mainClass": "MavenWrapperDownloader"
         }
     ]
 }

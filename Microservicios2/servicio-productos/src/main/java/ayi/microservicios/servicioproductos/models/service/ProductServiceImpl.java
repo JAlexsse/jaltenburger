@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import ayi.microservicios.servicioproductos.models.entity.Product;
+import ayi.microservicios.commons.entity.Product;
 import ayi.microservicios.servicioproductos.models.repository.IProductRepository;
 
 @Service

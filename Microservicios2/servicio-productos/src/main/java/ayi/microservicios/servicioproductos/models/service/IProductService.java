@@ -2,7 +2,7 @@ package ayi.microservicios.servicioproductos.models.service;
 
 import java.util.List;
 
-import ayi.microservicios.servicioproductos.models.entity.Product;
+import ayi.microservicios.commons.entity.Product;
 
 public interface IProductService {
     
