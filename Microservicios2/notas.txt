@@ -107,10 +107,10 @@ eureka.client.service-url.defaultZone=http://localhost:8761/eureka
 Necesitamos su ubicacion para que cuando los clientes intenten comunicarse con el mandando un heartbeat este les comunique su habilitacion.
 
 	INVESTIGAR : HEARTBEAT
-	Los microservicios se registran de forma automatica mandando una 	señal.
+	Los microservicios se registran de forma automatica mandando una señal.
 	Luego, cada 30 segundos, mandan una nueva para actualizar.
 	Si pasan más de 3 periodos sin mandar señal, el registro del 	microservicio se elimina.
-	Si vuelve ha querer registrarse, luego de haber sido eliminado, 		necesitara enviar 3 señales (90 segundos) para que quedo habilitado 	nuevamente en el servidor de eureka.
+	Si vuelve ha querer registrarse, luego de haber sido eliminado, necesitara enviar 3 señales (90 segundos) para que quedo habilitado 	nuevamente en el servidor de eureka.
 
 Eureka tiene incluido Ribbon asi que no hace falta agregar la dependency y otras configuraciones (por ej. ombre-del-servicio-a-conectar.ribbon.listOfServer=localhost)de Ribbon si tenemos la de eureka.
 
@@ -146,7 +146,7 @@ Dependencias:
 
 Para habilitarlo:
 Tenemos que agregar la notacion en la Application:
-@EnableCircuitBreaker
+@EnableCircuitBreaker -> funciona hasta la 2.3.4 -> @EnableHystrix ya no es parte de spring cloud
 
 Para hacer caminos alternativos en caso de falla se usa:
 @HystrixCommand(fallbackMethod = "alternativeMethod")
@@ -353,3 +353,96 @@ PROBLEMA: La clase de entidad Producto no esta en el mismo conectexto, esta en l
 
 ->En la clase principal anotada con SpringBootApplication en el microservicio que consume la libreria utilizamos el EntityScan y proporcionamos la locación de las clases que vamos a utilizar:
 	@EntityScan({"ayi.microservicios.commons.entity"})
+
+SPRING CLOUD SECURITY
+Autenticacion: se refiere al proceso de establecer un principal(un usuario, dispositivo o algun otro sistema el cual puede ejecutar alguna accion en nuestro sistema), en general permite a los principal autenticarse en base a cualquier proveedor de seguridad, ej: LDAP, Base de datos relacional, Autentificacion HTTP.
+
+Autorizacion: Se refiere al proceso de decidir si se otorga acceso a un usuario para realizar una accion dentro de la aplicacion, es decir, para controlar el acceso a los recursos de la aplicacion por medio de la asignacion de roles y permisos a grupos de usuarios.
+
+Recursos: Puede ser el backend, api rest, controladores, servicios, logica de negocios,etc.
+
+Roles: Grupo o tipo de usuario al cual se le otorgan cierto tipos de privilegios para llevar a cabo una o varias acciones dentro de la aplicacion. Son construcciones simples, que constan de un nombre. Pueden consederse a un usuario o a otros roles.
+Se utilizan para crear grupos logicos de usuarios para la asignacion adecuada de los privilegios en las aplicaciones.
+
+JWT -> Json Web Token
+Estandar abierto para implementar seguridad en nuestras aplicaciones API REST basado en Token. Estandar RFC 7519, una forma segura de representar reclamos entre dos partes (cliente-servidor).
+Un usuario envia un codigo alfanumerico (no contiene información sensible) al servidor y el servidor se encarga de desifrar decodificar validar y determina si el usuario esta registrado en nuestro sistema y tiene el permiso a traves de sus roles. De acuerdo a esto le va a dar acceso o no a determinadas páginas, partes o recursos de nuestra aplicación.
+Tambien se encarga de generar este codigo de una palabra, o codigo secreto que tengamos configurado en nuestro servidor. Este codigo secreto o certificado, solo se mantiene en el servidor, es privado y nunca un cliente va a poder obtener información de ella, ya que a través de este codigo se genera el json web token y tambien como se valida o verifica.
+Esto nos permite evitar guardar sesiones en el servidor, como consecuencia nuestro servidor será más ligero.
+
+Caracteristicas:
+-Muy compacto
+-Se puede enviar a traves de : peticion web, url o un parametro POST o dentro de la cabeceras HTTP en Authorization (recomendada).
+-Transimision agil liviana
+-Contiene toda la informacion necesaria, por lo cual no es necesario hacerle consultas al servidor constantemente
+-No se necesita guardar sesiones en el servidor
+
+Importante: Esta codificado en doble via, por lo tanto es reversible y se puede leer su información, se puede decodificar y, como cualquier persona con conocimiento suficiente puede leer y manipular esta informacion, no podemos pasar informacion sensible atraves de ella. 
+
+Timpo:
+-Si no se determina tiempo de caducidad es por tiempo indeterminado, pero es importante como buena practica determinar este tiempo de expiración.
+-Mucho tiempo puede traducirse en problemas para eliminar usuarios debido a que los token aun son validos.
+-Poco tiempo nos obliga a iniciar sesion a cada rato.
+-Encontrar el tiempo adecuado: 1h-4h-etc.
+
+Es STATELESS, no tiene estado, no mantiene una persistencia. Cada vez que queremos acceder a un recurso que esta protegido en el servidor tenemos que enviar el JTW.
+
+Partes que conforman el JWB:
+-3 partes separadas por puntos "."
+-Header: Contiene informacion sobre el algoritmo en el cual se va a codificar los tokens, y tambien el tipo.
+-Payload: Informacion del usuario. sup, representa un identificador, tipicamente es el nombre de usuario, un email, un numero unico, etc. La informacion que necesitemos. Las fechas de creacion y expiracion. Los roles. Etc.
+-Verify Signature: es requerido un codigo secreto, que de acuerdo a ese codigo se generan los JWT y tambien se decodifica en funcion de este codigo. Una aplicacion cliente jamas va a tener acceso a este codigo. Sirve para saber que un toklen no fue manipulado.
+
+Se guarda en el Session Storage o en el LocalStorage. F12 -> pestaña Application -> Session Storage o Local Storage. En el Session Storage la informacion permanece persistente mientras este activo el navegador, en cambio, Local Storage que de forma persistente en el equipo aun si el navegador se cierra. Ambos comparten su informacion atraves del dominio. Cuando se eligen tiempos mas extensos de expiracion lo mejor es guardar esa informacion en Local Storage. En cambio cuando es un par de horas se utiliza el Session Storage. 
+
+Ninguno es mas seguro que el otro.
+
+OAUTH2
+Es un framework, un protocolo estandar de autorizacion que permite a las aplicaciones de terceros autenticarse con una cuenta de usuario ubicada en otra aplicacion, en un servicio HTTP externo. Para compartir un sistema de autenticacion de una aplicacion a otra, sin compartir toda la informacion del usuario ni las credenciales.
+
+Se compone de 2 partes:
+-El servidor de autorizacion (Authorization Server): se encarga de realizar la autenticacion del usuario y, si se valida, genera un token que es proveido al usuario para que pueda acceder a los distintos recursos de nuestra aplicacion.
+-El servidor de recursos (Resource Server): se encarga de administrar los permisos y accesos hacia nuestros endpoints que estan con seguridad. Por debajo, el resource server aplica un filtro de Spring o OAuth2 Authentication Processing Filter, el cual se utiliza para validar y dar acceso a una peticion HTTP o Reuqest que viene desde el cliente.Este request es el que envia el token de acceso en las cabeceras y si es valido el servidor de recurso otorga el permiso para que el cliente pueda acceder a los recursos del backend.
+
+Proceso del Authorization Server:
+-Ruta url, del tipo POST, Auth Token. Esta ruta es proveida por Spring y nos permite realizar el login, autenticacion. Si este proceso de autenticacion es correcto, genera el token.
+-En la ruta Auth Token se envian parametros. Principal: Authorization(client_id:client_secret) concatenados con ":" y encriptado en base64. Es una autorizacion del tipo Basic. Ademas se manda el Content-Type, del tipo form-urlencoded.
+-En el cuerpo del request: las credenciales que son el username y el password, y el grant_type del tipo password. 
+-Cuando el usuario ya tiene el token se mandara la ruta del tipo GET para consumir un recurso, y en la cabecera se envia el atributo Authorization del tipo Bearer y el token de acceso.
+-Si el usuario tiene la autorizacion correspondiente se le retornara el recurso que esta pidiendo.
+
+NOTA: utilizar LAZY por que nos va a traer solo la consulta que buscamos, y es recomendada esta practica. Cuando tenemos una base de datos grande y muchas relaciones utilizar EAGER significaria traer toda la base de datos. Utilizar LAZY nos evita una sobre carga en el performance, por que solo cuando utilicemos el GET se va a hacer la consulta en la base de datos mediante el proxy.
+
+REST REPOSITORIES
+Otra forma de implemenrar CRUDS de forma automatica.
+
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-data-rest</artifactId>
+	</dependency>
+
+@RepositoryRestResource(path = "usuarios")
+Se utiliza en el repositorio y generera todo el CRUD de manera automatizada.
+
+Con eso nos va a devolver un JSON con estructura segun el estandar HATEOAS (Hypermedia as the Engine of Application State). Es una restricción de la lectura del API REST. Cuando el servidor retorna el JSON tambien devuelve informacion en forma de hipervinculos y otros recursos del API, que le indica al cliente como navegar, como encontrar la informacion. El cliente no requiere ningun conocimiento previo acerca de la forma de interactuar con la aplicacion, con el API REST, este estandar proporciona enlaces que son como una documentacion de como tenemos que navegar la aplicacion.
+
+Para acceder a los mas comunes con poner PUT, POST, DELETE, GET y enviar el parametro o el JSON basta.
+Para los personalizados: localhost:8097/api/usuarios/usuarios/search/findByUsername?username=Vanessa04
+En caso de que queramos renombrar, tanto path como parametro:
+	@RestResource(path="/buscar-username")
+    	public Usuario findByUsername(@Param("usuario") String username);
+
+	localhost:8097/api/usuarios/usuarios/search/buscar-username?usuario=Maria123
+
+Configurar JSON para mostrar cierta informacion:
+
+@Configuration
+public class RepositoryConfig implements RepositoryRestConfigurer{
+    
+    @Override
+    public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config){
+        config.exposeIdsFor(Usuario.class, Role.class);
+    }
+}
+
+

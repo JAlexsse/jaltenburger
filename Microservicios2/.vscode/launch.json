@@ -40,6 +40,13 @@
         },
         {
             "type": "java",
+            "name": "Launch UsuariosApplication",
+            "request": "launch",
+            "mainClass": "ayi.microservicios.usuarios.UsuariosApplication",
+            "projectName": "usuarios"
+        },
+        {
+            "type": "java",
             "name": "Launch ZuulServerApplication",
             "request": "launch",
             "mainClass": "ayi.microservicios.zuulserver.ZuulServerApplication",
@@ -50,6 +57,12 @@
             "name": "Launch MavenWrapperDownloader",
             "request": "launch",
             "mainClass": "MavenWrapperDownloader"
+        },
+        {
+            "type": "java",
+            "name": "Launch UsuariosApplication(1)",
+            "request": "launch",
+            "mainClass": "ayi.microservicios.usuarios.UsuariosApplication"
         }
     ]
 }
