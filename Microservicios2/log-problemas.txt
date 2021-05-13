@@ -24,3 +24,10 @@ PROBLEMAS
 	cambiar version spring cloud -> Greenwich -> Hoxton (Funciono)
 
 
+5- Zuulfilter Exception
+com.netflix.zuul.exception.ZuulException: at org.springframework.cloud.netflix.zuul.filters.post.SendErrorFilter.findZuulException(SendErrorFilter.java:118) ~[spring-cloud-netflix-zuul-2.2.3.RELEASE.jar:2.2.3.RELEASE]
+
+	SOLUCIÓN: Los mappings en FeignClient DEBEN SER IGUALES al servicio 	del Repository que consume. (Funciono)
+
+6- [404] during [GET] to [http://servicio-usuarios/usuarios/search/buscar-username?username=admin]
+	SOLUCIÓN: En el Repository va @Param pero en el FeignClient @RequestParam (Funciono)

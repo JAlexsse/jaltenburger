@@ -486,5 +486,33 @@ extiende de AuthorizationServerConfigurerAdapter
 
 Se encargara de todo el proceso de login, de atentificacion, la creacion del token JWT, validarlo, etc.
 
-Se utilizara el AuthenticationManager, con los roles y usuarios que se obtienen a traves de la clase UsuarioService, implementada con cliente Feign mediante API REST.
+Se utilizara el AuthenticationManager, con los roles y usuarios que se obtienen a traves de la clase UsuarioService, implementada con cliente Feign mediante API REST, para ello lo tenemos que registrar sobre escribiendo los metodos de AuthorizationServerConfigurerAdapter.
+
+configure(AuthorizationServerEndpointsConfigurer endpoints)
+Aqui se configura:
+-el authentication manager
+-token storage: que debe ser de tipo JWT
+-converter: LaxedTokenConverter que se encarga de guardar o convertir los datos del usuario (que se conocen como claims) en el token JWT y codificarlos en Base 64. 
+
+configure(ClientDetailsServiceConfigurer clients)
+-Para configurar a los clientes, las aplicaciones frontends que van a acceder a nuestros micro servicios. Hay que registrar a cada uno de estos con su cliente id y su secreto o contraseña.
+-no solo se va a autentificar al cliente (aplicaicon front end) y sino que tambien al usuario.
+-se puede tener mas de un cliente separados con and()
+-	.inMemory()
+        .withClient("front-end-app")
+        .secret(passwordEncoder.encode("password-front-end-app"))
+        .scopes("read", "write")
+        .authorizedGrantTypes("password", "refresh_token")
+Se utiliza password cuando es con credenciales. Cuando nuestros usuarios existen en nuestro sistema de autenticacion. Esta es una atenticacion de tipo login con usuario y contraseña.
+Refesh token nos permite obtener un nuevo token antes que el actual caduque.
+        .accessTokenValiditySeconds(3600)
+        .refreshTokenValiditySeconds(3600)
+
+configure(AuthorizationServerSecurityConfigurer security)
+-permiso que van a tener los endpoint del servidor de oauth2 para generar el token y para validar los token.
+
+
+
+
+
 

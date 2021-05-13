@@ -6,8 +6,8 @@ INSERT INTO usuarios (
     lastname, 
     email
 ) VALUES 
-    ('Maria123', '123123', 1, 'Maria', 'Castro', 'maria@email.com'),
-    ('Hector52', '123123', 1, 'Hector', 'Hugo', 'hector@email.com');
+    ('Maria123', '$2a$10$n6bxvLuyY73BpQaITp1J.OcClS271j2U88CMhqD/1uvLUDWd2bUta', 1, 'Maria', 'Castro', 'maria@email.com'),
+    ('Hector52', '$2a$10$7uJ7cwjegn7gwXxxkgLKk.h6x752HwwDESdux/A5jAhe4mvMiqubK', 1, 'Hector', 'Hugo', 'hector@email.com');
 
 INSERT INTO roles (name) VALUES 
     ('ROLE_ADMIN'),
