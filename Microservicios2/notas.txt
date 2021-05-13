@@ -36,7 +36,7 @@ Viene configurado en los clientes de Eureka.
 @EnableFeignClients -> notacion que va en Application.
 @FeignClient(name="nombre del micro servicio al cual nos queremos conectar") -> notacion con la cual se define un cliente.
 
-Los Mapping en los controller los usamos para mappear nuestros metodos handdler a endpoint a rutas url. Mientras, en el Feign  Client, indicamos la ruta end point para condumir el servicio. 
+Los Mapping en los controller los usamos para mappear nuestros metodos handdler de endpoint a rutas url. Mientras, en el Feign  Client, indicamos la ruta end point para consumir el servicio. Tiene que ser igual a la que se encuentra en el microservicio a consumir, pero sin la implementacion. 
 
 TECNOLOGIA: RIBBON
 Para balanceo de cargas.
@@ -354,6 +354,8 @@ PROBLEMA: La clase de entidad Producto no esta en el mismo conectexto, esta en l
 ->En la clase principal anotada con SpringBootApplication en el microservicio que consume la libreria utilizamos el EntityScan y proporcionamos la locación de las clases que vamos a utilizar:
 	@EntityScan({"ayi.microservicios.commons.entity"})
 
+NOTA: No hace falta levantar los proyectos que son libreria, por que ya estan transformados en jar y maven ya los reconoce.
+
 SPRING CLOUD SECURITY
 Autenticacion: se refiere al proceso de establecer un principal(un usuario, dispositivo o algun otro sistema el cual puede ejecutar alguna accion en nuestro sistema), en general permite a los principal autenticarse en base a cualquier proveedor de seguridad, ej: LDAP, Base de datos relacional, Autentificacion HTTP.
 
@@ -434,7 +436,7 @@ En caso de que queramos renombrar, tanto path como parametro:
 
 	localhost:8097/api/usuarios/usuarios/search/buscar-username?usuario=Maria123
 
-Configurar JSON para mostrar cierta informacion:
+Configurar JSON para mostrar  id si es necesario :
 
 @Configuration
 public class RepositoryConfig implements RepositoryRestConfigurer{
@@ -445,4 +447,44 @@ public class RepositoryConfig implements RepositoryRestConfigurer{
     }
 }
 
+OAUTH2 SERVER
+-Dev tools
+-OpenFeign
+-Web Starter
+-Eureka Client
+-Oauth2 
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-oauth2</artifactId>
+	</dependency>
+->la dependencia al commons de usuarios
+
+En la clase anotada con SpringBootApplication agregamos la notacion:
+@EnableEurekaClient
+@EnableFeignClients
+
+En la interface @FeignClient hay que tener en cuenta que los mappings, debido a que usamos @RestRepositories en el microservicio usuarios,  tendran que tener en su path el nombre especificado en la notacion, el search y luego el nombre especificado para el mapping en la notacion @RestResource:
+"/usuarios/search/buscar-username"
+
+Clase Service de SpringSecurity:
+Donde vamos a autenticar al usuario, y vamos a implementar la interface UserDetailsService. Esta interface tiene un metodo que se encarga de autenticar, obtiene al usuario através de su username, independientemente de si estamos usando JPA, JDC o con microservicios consumiento una API REST mediante Feign.
+
+En este caso vamos a obtener al usuario por el username utilizando un cliente HTTP con Feign.
+
+Tambien, recordar que, para que esta clase servicio sea un componente de Spring y poderla inyectar luego en otras clases, hay que anotarla con @Service.
+
+Luego hay que registrar en el Authentication Manager de Spring Security la clase service, para que pueda realizarse el proceso de autenticacion usando el cliente feign medienta comunicacion API REST.
+
+Para ello se realiza una clase de configuracion, anotada con @Configuration, que extiende de WebSecurityConfigureAdapter. Alli se inyecta la clase servicio pero con la interface generica UserDetailsService.
+
+Al Override configure es importante tener en cuenta que tenemos que inyectar el AuthenticationManagerBuilder y por ello tambien debemos usar Autowired.
+
+Clase de configuracion del servidor de autentificacion:
+@Configuration
+@EnableAuthorizationServer
+extiende de AuthorizationServerConfigurerAdapter
+
+Se encargara de todo el proceso de login, de atentificacion, la creacion del token JWT, validarlo, etc.
+
+Se utilizara el AuthenticationManager, con los roles y usuarios que se obtienen a traves de la clase UsuarioService, implementada con cliente Feign mediante API REST.
 

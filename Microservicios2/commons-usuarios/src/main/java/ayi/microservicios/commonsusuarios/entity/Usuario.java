@@ -1,4 +1,4 @@
-package ayi.microservicios.usuarios.entity;
+package ayi.microservicios.commonsusuarios.entity;
 
 import java.io.Serializable;
 import java.util.List;
