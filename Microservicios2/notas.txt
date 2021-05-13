@@ -511,6 +511,8 @@ Refesh token nos permite obtener un nuevo token antes que el actual caduque.
 configure(AuthorizationServerSecurityConfigurer security)
 -permiso que van a tener los endpoint del servidor de oauth2 para generar el token y para validar los token.
 
+Para poder agregar mas informacion en el Token hay que crear una clase anotada con @Component para que luego pueda ser inyectada, y que implemente TokenEnhancer.
+
 
 
 
