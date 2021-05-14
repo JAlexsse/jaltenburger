@@ -38,5 +38,11 @@ public class InfoAdicionalToken implements IUsuarioService, TokenEnhancer{
     public Usuario findByUsername(String username) {
         return usuarioService.findByUsername(username);
     }
+
+    @Override
+    public Usuario update(Usuario usuario, Long id) {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
 }

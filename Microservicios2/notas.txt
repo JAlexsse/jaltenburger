@@ -513,8 +513,115 @@ configure(AuthorizationServerSecurityConfigurer security)
 
 Para poder agregar mas informacion en el Token hay que crear una clase anotada con @Component para que luego pueda ser inyectada, y que implemente TokenEnhancer.
 
+Luego en el configure de los endpoint hay que unir el accessToken con la nueva informacion, atraves del componente TokenEnhancerChain.
+
+Configuracion del Resource Server, para que segun el token le de acceso a los clientes a los distintos microservicios protegidos:
+-Copiar y pegar los Beans de accessTokenConverter y de tokenStore. Es importante que estos sean iguales, ya que deben compartir la misma configuracion, para que se valide de forma correcta.
+
+En configure HttpSecurity especificamos el acceso a rutas. Es importante que primero vayan las rutas especificas, para autenticarnos, para listar o los get, y  luego poner las reglas mas generales o las cuales no especificamos, por que se van a configurar de forma automatica segun lo que hayamos puesto en las primeras rutas especificas. Por ultimo se agrega una clausula que para cualquier otra ruta que no este especificada se necesite autenticacion.
 
 
+Para abstraer informacion importante, como la llave secreta, se crea un archivo en nuestro repositorio GIT llamada APPLICATION.PROPERTIES, es importante el nombre por que se va a compartir entre los microservicios, y este debe poder reconocerse. 
 
+Se agrega en el pom de zuul y de oauth la dependencia config:
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-config</artifactId>
+	</dependency>
+Todo los clientes del repositorio GIT tienen que tener el bootstrap.properties
 
+El siguiente paso es inyectar nuestra clase de configuracion: para ello inyectamos Enviroment desde : org.springframework.core.env.Environment
 
+Antes que caduque el token de acceso o incluso luego de haber caducado tenemos que ser capaces de renovarlo através del refresh token. Por ello siempre el tiempo de caducidad del refresh token debe ser mayor al del token de acceso.
+
+Para obtener un nuevo token con postman atraves del refresh token:
+-obtenemos el refresh_token
+-enviamos como POST a /api/security/oauth/token una request que debe tener
+	-authorization: con usuario y contraseña
+	-body: con grant_type = refresh_token y refresh_token = al token de refresh que obtuvimos antes.
+
+CORS 
+Intercambio de recursos de origen cruzado o Cross-origin resource sharing, basicamente que residen en distinto dominio
+Por ej una app de front end ubicada en otro puerto esta tratando de comunicarse con nuestro backend, al API REST, atreves de zuul que es nuestra puerta de entrada
+
+Mecanismo que utiliza las cabeceras HTTP para permitir que una aplicacion cliente que reside en otro servidor y/o dominio distinto al backend tenga permisos para acceder a los recursos al mismo. Backend con puerta de entrada al servidor de recursos configurada en zuul, y protegido por Spring Security.
+
+El CORS se va a configurar en la configuracion del servidor de recursos, en configure(HttpSecurity http).
+
+.and().cors().configurationSource(corsConfigurationSource());
+
+@Bean
+public CorsConfigurationSource corsConfigurationSource(){
+        CorsConfiguration corsConfig = new CorsConfiguration();
+
+	// nos permite agregar, de forma automatica, cualquier origen
+        corsConfig.setAllowedOrigins(Arrays.asList("*"));
+	
+	//permitir los metodos, importante el options por que lo utiliza oauth
+	corsConfig.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
+        
+	//permitir credenciales
+	corsConfig.setAllowCredentials(true);
+        
+	//permitir el el tipo de header
+	corsConfig.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        
+	//pasar esta configuracion a los endpoints, UrlBasedCorsConfigurationSource importada de web no de reactive
+        UrlBasedCorsConfigurationSource source = new 	UrlBasedCorsConfigurationSource();
+	
+	// utilizamos /** para indicar que esta configuracion aplica a todos los endpoints
+        source.registerCorsConfiguration("/**", corsConfig);
+        
+        return source;
+    }
+
+Lo siguiente es utilizar otro Bean para aplicar un filtro al CORS, para que quede configurado a nivel global en un filtro de Spring a toda la aplicacion en general.
+
+@Bean
+    public FilterRegistrationBean<CorsFilter> corsFilter(){
+	
+	//pasamos la configuracion del cors al corsfilter que le pasamos al nuevo registro de filtro.
+        FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<CorsFilter>(
+            	new CorsFilter(
+			corsConfigurationSource()
+		)
+	);
+	
+	//le damos un numero de prioridad alto
+	bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        
+    }
+
+MANEJANDO EXITO Y FRACASO EN AUTENTIFICACION
+Implementacion de eventos cuando un evento se llevo a cabo con exito o fracaso, para poder manejar algun proceso.
+
+Tiene que ser un @Component asi se puede registrar en Spring Security Config.
+Tiene que implementar la interface AuthenticationEventPublisher.
+
+Lo inyectamos con autowired en springsecurityconfig:
+	@Autowired
+    	private AuthenticationEventPublisher eventPublisher; 
+
+y lo agregamos en el configure(AuthenticationManagerBuilder auth) con un 
+	.and().authenticationEventPublisher(eventPublisher);
+
+Se puede agregar mas funcionalidad a los eventos de error y sucess.
+
+Manejar la desabilitacion de cuenta, a traves de los attempts:
+En cada intento de login se tiene que modificar el usuario, agregando un intento a attempts. Pero para poder modificarlo tenemos que poder consumirlo desde nuestro cliente, en este caso Feign.
+
+Lo tenemos que especificar en el UsuarioFeignClient:
+
+	@PutMapping("/usuarios/{id}")
+    	public Usuario update(@RequestBody Usuario usuario, @PathVariable Long id);
+
+Especificar en la interface de Service sin notaciones:
+	public Usuario update(Usuario usuario, Long id);
+
+e implementarlo en la implementación del service:
+	@Override
+    	public Usuario update(Usuario usuario, Long id) {
+        	return clientFeign.update(usuario, id);
+    	}
+
+Lo siguiente es inyectar esta interface de Usuario en los eventos
