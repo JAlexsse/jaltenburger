@@ -24,6 +24,11 @@ public class AuthenticationSucessErrorHandler implements AuthenticationEventPubl
 
     @Override
     public void publishAuthenticationSuccess(Authentication authentication) {
+        
+        if(authentication.getName().equalsIgnoreCase("front-end-app")){
+            return;
+        }
+
         UserDetails user = (UserDetails) authentication.getPrincipal();
         String message = "Successful login: " + user.getUsername();
 
