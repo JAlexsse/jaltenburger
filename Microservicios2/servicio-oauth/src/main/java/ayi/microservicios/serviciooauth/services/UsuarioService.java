@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import ayi.microservicios.commonsusuarios.entity.Usuario;
 import ayi.microservicios.serviciooauth.clients.UsuarioFeignClient;
+import feign.FeignException;
 
 @Service
 public class UsuarioService implements IUsuarioService, UserDetailsService{
@@ -27,27 +28,29 @@ public class UsuarioService implements IUsuarioService, UserDetailsService{
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario usuario = clientFeign.findByUsername(username);
         
-        if(usuario==null){
+        try {
+            Usuario usuario = clientFeign.findByUsername(username);
+
+            List<GrantedAuthority> authorities = usuario.getRoles()
+                .stream().map(role -> new SimpleGrantedAuthority(role.getName()))
+                .peek(authority -> log.info("Role: " + authority.getAuthority()))
+                .collect(Collectors.toList());
+
+            log.info("Usuario autenticado: " + username);
+            
+            return new User(
+                usuario.getUsername(), 
+                usuario.getPassword(), 
+                usuario.getEnabled(), 
+                true, true, true, authorities);
+        } catch (FeignException e) {
             log.error( "Error. No se encuentra al usuario " + username + " en la base de datos.");
+            
             throw new UsernameNotFoundException(
-                "Error. No se encuentra al usuario " + username + " en la base de datos."
+                    "Error. No se encuentra al usuario " + username + " en la base de datos."
             );
         }
-
-        List<GrantedAuthority> authorities = usuario.getRoles()
-            .stream().map(role -> new SimpleGrantedAuthority(role.getName()))
-            .peek(authority -> log.info("Role: " + authority.getAuthority()))
-            .collect(Collectors.toList());
-
-        log.info("Usuario autenticado: " + username);
-        
-        return new User(
-            usuario.getUsername(), 
-            usuario.getPassword(), 
-            usuario.getEnabled(), 
-            true, true, true, authorities);
     }
 
     @Override
